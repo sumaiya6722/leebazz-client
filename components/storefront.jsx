@@ -1,0 +1,421 @@
+"use client";
+
+import Link from "next/link";
+import { useMemo, useState } from "react";
+import {
+  Search,
+  SlidersHorizontal,
+  Menu,
+  X,
+  ArrowUpRight,
+  ShoppingBag,
+} from "lucide-react";
+import {
+  formatPrice,
+  getAttributeValues,
+  getProductRouteKey,
+  primaryImage,
+} from "@/lib/catalog";
+
+export function Header({ categories }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <div className="announcement">
+        Thoughtfully chosen for every part of your world <span>✳</span>
+      </div>
+      <header className="site-header">
+        <div className="header-top wrap">
+          <button
+            className="icon-button mobile-menu"
+            aria-label="Toggle navigation"
+            onClick={() => setOpen(!open)}
+          >
+            {open ? <X /> : <Menu />}
+          </button>
+          <Link
+            href="/"
+            className="wordmark"
+            style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}
+          >
+            leebazz<span>.</span>
+          </Link>
+          <nav
+            className={`main-nav ${open ? "is-open" : ""}`}
+            aria-label="Main navigation"
+          >
+            <Link
+              href="/shop"
+              className="nav-all"
+              onClick={() => setOpen(false)}
+            >
+              Shop all
+            </Link>
+            {categories.map((category) => (
+              <Link
+                key={category.id}
+                href={`/category/${category.id}`}
+                onClick={() => setOpen(false)}
+              >
+                {category.name}
+              </Link>
+            ))}
+          </nav>
+          <div className="header-actions">
+            <form
+              action="/search"
+              className="search-box"
+              style={{ width: "clamp(110px, 8vw, 140px)" }}
+            >
+              <Search size={17} />
+              <input
+                name="q"
+                placeholder="Search"
+                aria-label="Search products"
+              />
+              <button aria-label="Submit search">
+                <ArrowUpRight size={16} />
+              </button>
+            </form>
+            <Link
+              href="/shop"
+              className="icon-button header-shop"
+              aria-label="Shop"
+            >
+              <ShoppingBag />
+            </Link>
+            <Link href="/login" className="header-login">
+              Login
+            </Link>
+            <Link href="/signup" className="header-signup">
+              Sign up
+            </Link>
+          </div>
+        </div>
+      </header>
+    </>
+  );
+}
+
+export function ProductCard({ product, categoryName }) {
+  return (
+    <article className="product-card">
+      <Link
+        href={`/product/${getProductRouteKey(product)}`}
+        className="product-image"
+      >
+        <img
+          src={primaryImage(product)}
+          alt={
+            product.images.find((image) => image.isPrimary)?.alt ?? product.name
+          }
+          loading="lazy"
+        />
+        <span className="image-arrow">
+          <ArrowUpRight size={17} />
+        </span>
+      </Link>
+      <div className="product-meta">
+        <span>{categoryName}</span>
+        <span>
+          {product.isNewArrival
+            ? "Just in"
+            : product.isFeatured
+              ? "Selected"
+              : ""}
+        </span>
+      </div>
+      <Link
+        className="product-title"
+        href={`/product/${getProductRouteKey(product)}`}
+      >
+        {product.name}
+      </Link>
+      <div className="product-price">
+        {formatPrice(product.price, product.currency)}
+      </div>
+    </article>
+  );
+}
+
+export function ProductGrid({ products, categories, filterKeys, query = "" }) {
+  const [sort, setSort] = useState("featured");
+  const [filters, setFilters] = useState({});
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
+  const filterChoices = useMemo(() => {
+    return Object.fromEntries(
+      filterKeys.map((key) => {
+        const values = products.flatMap((product) =>
+          getAttributeValues(product, key),
+        );
+        return [key, [...new Set(values)]];
+      }),
+    );
+  }, [products, filterKeys]);
+  const visible = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    const list = products.filter((product) => {
+      const category = categories.find(
+        (item) => item.id === product.categoryId,
+      );
+      const subcategory = category?.subcategories.find(
+        (item) => item.id === product.subcategoryId,
+      );
+      const attributes = Object.values(product.attributes ?? {})
+        .flatMap((value) => (Array.isArray(value) ? value : [value]))
+        .join(" ");
+      const text =
+        `${product.name} ${product.description} ${product.tags.join(" ")} ${attributes} ${category?.name ?? ""} ${subcategory?.name ?? ""}`.toLowerCase();
+      return (
+        (!q || text.includes(q)) &&
+        (!minPrice || product.price >= Number(minPrice)) &&
+        (!maxPrice || product.price <= Number(maxPrice)) &&
+        Object.entries(filters).every(
+          ([key, value]) =>
+            !value || getAttributeValues(product, key).includes(value),
+        )
+      );
+    });
+    return list.sort((a, b) =>
+      sort === "price-low"
+        ? a.price - b.price
+        : sort === "price-high"
+          ? b.price - a.price
+          : sort === "name"
+            ? a.name.localeCompare(b.name)
+            : Number(b.isFeatured) - Number(a.isFeatured),
+    );
+  }, [products, categories, query, filters, sort, minPrice, maxPrice]);
+  return (
+    <>
+      <div className="catalog-tools">
+        <div className="filter-row">
+          <SlidersHorizontal size={15} />
+          <span>Filter</span>
+          {filterKeys
+            .filter((key) => key !== "price")
+            .map((key) =>
+              filterChoices[key]?.length ? (
+                <label key={key}>
+                  <span className="sr-only">Filter by {key}</span>
+                  <select
+                    value={filters[key] ?? ""}
+                    onChange={(e) =>
+                      setFilters({ ...filters, [key]: e.target.value })
+                    }
+                  >
+                    <option value="">{key.replaceAll("-", " ")}</option>
+                    {filterChoices[key].map((value) => (
+                      <option key={value}>{value}</option>
+                    ))}
+                  </select>
+                </label>
+              ) : null,
+            )}
+          {filterKeys.includes("price") && (
+            <div className="price-filter">
+              <span>BDT</span>
+              <input
+                aria-label="Minimum price"
+                type="number"
+                min="0"
+                placeholder="Min"
+                value={minPrice}
+                onChange={(e) => setMinPrice(e.target.value)}
+              />
+              <span>–</span>
+              <input
+                aria-label="Maximum price"
+                type="number"
+                min="0"
+                placeholder="Max"
+                value={maxPrice}
+                onChange={(e) => setMaxPrice(e.target.value)}
+              />
+            </div>
+          )}
+        </div>
+        <div className="sort-row">
+          <span>{visible.length} pieces</span>
+          <label>
+            Sort{" "}
+            <select value={sort} onChange={(e) => setSort(e.target.value)}>
+              <option value="featured">Featured</option>
+              <option value="price-low">Price: low to high</option>
+              <option value="price-high">Price: high to low</option>
+              <option value="name">Name</option>
+            </select>
+          </label>
+        </div>
+      </div>
+      {visible.length ? (
+        <div className="product-grid">
+          {visible.map((product) => (
+            <ProductCard
+              key={product.id}
+              product={product}
+              categoryName={
+                categories.find((cat) => cat.id === product.categoryId)?.name ??
+                ""
+              }
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="empty-state">
+          <span>Nothing here yet</span>
+          <p>No products match those filters. Try adjusting your search.</p>
+        </div>
+      )}
+    </>
+  );
+}
+
+export function BrandLogo() {
+  return (
+    <Link href="/" className="brand-lockup" aria-label="Leebazz home">
+      <span className="brand-mark-dot" aria-hidden="true" />
+    </Link>
+  );
+}
+
+export function ContactMessageForm({ email }) {
+  const [status, setStatus] = useState("");
+  function sendMessage(event) {
+    event.preventDefault();
+    if (!email) {
+      setStatus("Contact email is not configured yet.");
+      return;
+    }
+    const formData = new FormData(event.currentTarget);
+    const subject = String(
+      formData.get("subject") ?? "Message from Leebazz website",
+    );
+    const body = [
+      `Name: ${formData.get("name") ?? ""}`,
+      `Email: ${formData.get("senderEmail") ?? ""}`,
+      "",
+      String(formData.get("message") ?? ""),
+    ].join("\n");
+    window.location.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    setStatus("Your email app should open with your message ready to send.");
+  }
+
+  return (
+    <form className="contact-form" onSubmit={sendMessage}>
+      <label>
+        Name
+        <input name="name" autoComplete="name" required />
+      </label>
+      <label>
+        Your email
+        <input name="senderEmail" type="email" autoComplete="email" required />
+      </label>
+      <label>
+        Subject
+        <input name="subject" required />
+      </label>
+      <label>
+        Message
+        <textarea name="message" rows={5} required />
+      </label>
+      <button className="button button-dark" type="submit" disabled={!email}>
+        Prepare email <ArrowUpRight size={16} />
+      </button>
+      {!email && (
+        <p className="form-note">
+          Add <code>NEXT_PUBLIC_CONTACT_EMAIL</code> to your local environment
+          to enable this form.
+        </p>
+      )}
+      {status && (
+        <p className="form-status" role="status">
+          {status}
+        </p>
+      )}
+    </form>
+  );
+}
+
+export function Footer({ categories, products, socialLinks }) {
+  const newArrivals = products
+    .filter((product) => product.isNewArrival)
+    .slice(0, 5);
+  return (
+    <footer className="site-footer">
+      <div className="footer-brand-row wrap">
+        <Link href="/" className="wordmark" aria-label="Leebazz home">
+          leebazz<span>.</span>
+        </Link>
+      </div>
+      <div className="footer-main wrap">
+        <nav className="footer-links footer-new-links" aria-label="What's new">
+          <span>What’s new</span>
+          {newArrivals.map((product) => (
+            <Link
+              key={product.id}
+              href={`/product/${getProductRouteKey(product)}`}
+            >
+              {product.name}
+            </Link>
+          ))}
+        </nav>
+        <nav className="footer-links" aria-label="Categories">
+          <span>Categories</span>
+          {categories.map((cat) => (
+            <Link key={cat.id} href={`/category/${cat.id}`}>
+              {cat.name}
+            </Link>
+          ))}
+        </nav>
+        <nav
+          className="footer-links footer-customer-service"
+          aria-label="Customer service"
+        >
+          <span>Customer service</span>
+          <div className="footer-service-list">
+            <div>
+              <Link href="/contact">Contact Us</Link>
+              <Link href="/how-to-order">How To Order</Link>
+              <Link href="/billing-and-payments">Billing &amp; Payments</Link>
+              <Link href="/shipping-and-delivery">Shipping &amp; Delivery</Link>
+            </div>
+            <div>
+              <Link href="/track-your-orders">Track Your Orders</Link>
+              <Link href="/returns-and-exchanges">Return &amp; Exchanges</Link>
+              <Link href="/faq">FAQ</Link>
+            </div>
+          </div>
+        </nav>
+        <nav className="footer-links" aria-label="Social media">
+          <span>Social</span>
+          {socialLinks.map((social) =>
+            social.href ? (
+              <a
+                href={social.href}
+                key={social.label}
+                target="_blank"
+                rel="noreferrer"
+              >
+                {social.label}
+              </a>
+            ) : (
+              <span className="footer-placeholder" key={social.label}>
+                {social.label} · add profile URL
+              </span>
+            ),
+          )}
+        </nav>
+        <nav className="footer-links" aria-label="Corporate">
+          <span>Corporate</span>
+          <Link href="/privacy-policy">Privacy Policy</Link>
+          <Link href="/terms-and-conditions">Terms &amp; Conditions</Link>
+        </nav>
+      </div>
+      <div className="footer-bottom wrap">
+        <span>Demo collection · Prices shown in BDT</span>
+      </div>
+    </footer>
+  );
+}

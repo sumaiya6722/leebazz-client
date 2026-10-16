@@ -1,0 +1,1352 @@
+{
+  "meta": {
+    "brand": "Leebazz",
+    "purpose": "Temporary demo data for storefront visualization only",
+    "currency": "BDT",
+    "priceNote": "All prices are fictional sample prices in Bangladeshi taka. Replace before launch.",
+    "imageNote": "Remote sample image URLs are for layout testing only and may not match the named product. Replace with Leebazz-owned or properly licensed product photography.",
+    "skincareNote": "Skincare entries are placeholders. Do not use unverified ingredients, benefits, or product claims for real sales."
+  },
+  "categories": [
+    {
+      "id": "women",
+      "name": "Women",
+      "subcategories": [
+        {
+          "id": "sarees",
+          "name": "Sarees"
+        },
+        {
+          "id": "kamiz-sets",
+          "name": "Kamiz & Sets"
+        },
+        {
+          "id": "kurtis",
+          "name": "Kurtis"
+        },
+        {
+          "id": "scarves",
+          "name": "Scarves"
+        },
+        {
+          "id": "shawls",
+          "name": "Shawls"
+        }
+      ],
+      "filters": [
+        "colour",
+        "fabric",
+        "price"
+      ]
+    },
+    {
+      "id": "men",
+      "name": "Men",
+      "subcategories": [
+        {
+          "id": "panjabis",
+          "name": "Panjabis"
+        },
+        {
+          "id": "shirts",
+          "name": "Shirts"
+        },
+        {
+          "id": "fatuas",
+          "name": "Fatuas"
+        },
+        {
+          "id": "polos",
+          "name": "Polos"
+        },
+        {
+          "id": "kotis",
+          "name": "Kotis"
+        }
+      ],
+      "filters": [
+        "colour",
+        "size",
+        "fabric",
+        "price"
+      ]
+    },
+    {
+      "id": "kids",
+      "name": "Kids",
+      "subcategories": [
+        {
+          "id": "newborn-boys",
+          "name": "Newborn Boys"
+        },
+        {
+          "id": "newborn-girls",
+          "name": "Newborn Girls"
+        },
+        {
+          "id": "junior-boys",
+          "name": "Junior Boys"
+        },
+        {
+          "id": "junior-girls",
+          "name": "Junior Girls"
+        },
+        {
+          "id": "toys",
+          "name": "Toys"
+        },
+        {
+          "id": "kathas",
+          "name": "Kathas"
+        }
+      ],
+      "filters": [
+        "size",
+        "fabric",
+        "price"
+      ]
+    },
+    {
+      "id": "home-decor",
+      "name": "Home Décor",
+      "subcategories": [
+        {
+          "id": "dining-decor",
+          "name": "Dining Décor"
+        },
+        {
+          "id": "bedroom-decor",
+          "name": "Bedroom Décor"
+        },
+        {
+          "id": "kids-room-decor",
+          "name": "Kids’ Room Décor"
+        },
+        {
+          "id": "decor-pieces",
+          "name": "Décor Pieces"
+        }
+      ],
+      "filters": [
+        "price",
+        "material",
+        "quantity",
+        "quality"
+      ]
+    },
+    {
+      "id": "jewellery",
+      "name": "Jewellery",
+      "subcategories": [
+        {
+          "id": "earrings",
+          "name": "Earrings"
+        },
+        {
+          "id": "necklaces",
+          "name": "Necklaces"
+        },
+        {
+          "id": "rings",
+          "name": "Rings"
+        },
+        {
+          "id": "nose-pins",
+          "name": "Nose Pins"
+        },
+        {
+          "id": "toe-rings",
+          "name": "Toe Rings"
+        },
+        {
+          "id": "bracelets",
+          "name": "Bracelets"
+        }
+      ],
+      "filters": [
+        "price",
+        "colour",
+        "material"
+      ]
+    },
+    {
+      "id": "skincare",
+      "name": "Skincare",
+      "subcategories": [
+        {
+          "id": "face-packs",
+          "name": "Face Packs"
+        },
+        {
+          "id": "face-wash",
+          "name": "Face Wash"
+        },
+        {
+          "id": "body-wash",
+          "name": "Body Wash"
+        },
+        {
+          "id": "handmade-soaps",
+          "name": "Handmade Soaps"
+        },
+        {
+          "id": "shampoo",
+          "name": "Shampoo"
+        },
+        {
+          "id": "lotions",
+          "name": "Lotions"
+        },
+        {
+          "id": "body-oils",
+          "name": "Body Oils"
+        },
+        {
+          "id": "hair-oils",
+          "name": "Hair Oils"
+        }
+      ],
+      "filters": [
+        "price",
+        "scent",
+        "volume",
+        "skin-or-hair-type"
+      ]
+    }
+  ],
+  "products": [
+    {
+      "id": "LB-W01",
+      "name": "Indigo Handloom Saree",
+      "slug": "indigo-handloom-saree",
+      "categoryId": "women",
+      "subcategoryId": "sarees",
+      "description": "Demo listing for visualizing the Leebazz storefront. Replace with accurate product details before launch.",
+      "price": 3850,
+      "currency": "BDT",
+      "images": [
+        {
+          "url": "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=900&q=85",
+          "alt": "Indigo Handloom Saree",
+          "isPrimary": true
+        }
+      ],
+      "attributes": {
+        "colour": "Indigo",
+        "fabric": "Cotton"
+      },
+      "variants": [
+        {
+          "label": "Free Size",
+          "sku": "LB-W01-1",
+          "stock": 8,
+          "price": 3850
+        }
+      ],
+      "totalStock": 8,
+      "isActive": true,
+      "isFeatured": true,
+      "isNewArrival": false,
+      "tags": [
+        "women",
+        "sarees",
+        "demo"
+      ]
+    },
+    {
+      "id": "LB-W02",
+      "name": "Rose Garden Kurti",
+      "slug": "rose-garden-kurti",
+      "categoryId": "women",
+      "subcategoryId": "kurtis",
+      "description": "Demo listing for visualizing the Leebazz storefront. Replace with accurate product details before launch.",
+      "price": 1650,
+      "currency": "BDT",
+      "images": [
+        {
+          "url": "https://images.unsplash.com/photo-1583391733956-6c78276477e7?auto=format&fit=crop&w=900&q=85",
+          "alt": "Rose Garden Kurti",
+          "isPrimary": true
+        }
+      ],
+      "attributes": {
+        "colour": "Rose Pink",
+        "fabric": "Cotton Blend"
+      },
+      "variants": [
+        {
+          "label": "S",
+          "sku": "LB-W02-1",
+          "stock": 3,
+          "price": 1650
+        },
+        {
+          "label": "M",
+          "sku": "LB-W02-2",
+          "stock": 3,
+          "price": 1650
+        },
+        {
+          "label": "L",
+          "sku": "LB-W02-3",
+          "stock": 3,
+          "price": 1650
+        },
+        {
+          "label": "XL",
+          "sku": "LB-W02-4",
+          "stock": 3,
+          "price": 1650
+        }
+      ],
+      "totalStock": 12,
+      "isActive": true,
+      "isFeatured": false,
+      "isNewArrival": true,
+      "tags": [
+        "women",
+        "kurtis",
+        "demo"
+      ]
+    },
+    {
+      "id": "LB-W03",
+      "name": "Ivory Festive Kamiz Set",
+      "slug": "ivory-festive-kamiz-set",
+      "categoryId": "women",
+      "subcategoryId": "kamiz-sets",
+      "description": "Demo listing for visualizing the Leebazz storefront. Replace with accurate product details before launch.",
+      "price": 4200,
+      "currency": "BDT",
+      "images": [
+        {
+          "url": "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=900&q=85",
+          "alt": "Ivory Festive Kamiz Set",
+          "isPrimary": true
+        }
+      ],
+      "attributes": {
+        "colour": "Ivory",
+        "fabric": "Cotton Silk"
+      },
+      "variants": [
+        {
+          "label": "S",
+          "sku": "LB-W03-1",
+          "stock": 4,
+          "price": 4200
+        },
+        {
+          "label": "M",
+          "sku": "LB-W03-2",
+          "stock": 4,
+          "price": 4200
+        },
+        {
+          "label": "L",
+          "sku": "LB-W03-3",
+          "stock": 4,
+          "price": 4200
+        },
+        {
+          "label": "XL",
+          "sku": "LB-W03-4",
+          "stock": 4,
+          "price": 4200
+        }
+      ],
+      "totalStock": 16,
+      "isActive": true,
+      "isFeatured": true,
+      "isNewArrival": false,
+      "tags": [
+        "women",
+        "kamiz-sets",
+        "demo"
+      ]
+    },
+    {
+      "id": "LB-W04",
+      "name": "Everyday Printed Scarf",
+      "slug": "everyday-printed-scarf",
+      "categoryId": "women",
+      "subcategoryId": "scarves",
+      "description": "Demo listing for visualizing the Leebazz storefront. Replace with accurate product details before launch.",
+      "price": 650,
+      "currency": "BDT",
+      "images": [
+        {
+          "url": "https://images.unsplash.com/photo-1601924994987-69e26d50dc26?auto=format&fit=crop&w=900&q=85",
+          "alt": "Everyday Printed Scarf",
+          "isPrimary": true
+        }
+      ],
+      "attributes": {
+        "colour": "Multicolour",
+        "fabric": "Cotton"
+      },
+      "variants": [
+        {
+          "label": "Free Size",
+          "sku": "LB-W04-1",
+          "stock": 5,
+          "price": 650
+        }
+      ],
+      "totalStock": 5,
+      "isActive": true,
+      "isFeatured": false,
+      "isNewArrival": true,
+      "tags": [
+        "women",
+        "scarves",
+        "demo"
+      ]
+    },
+    {
+      "id": "LB-M01",
+      "name": "Classic White Panjabi",
+      "slug": "classic-white-panjabi",
+      "categoryId": "men",
+      "subcategoryId": "panjabis",
+      "description": "Demo listing for visualizing the Leebazz storefront. Replace with accurate product details before launch.",
+      "price": 2450,
+      "currency": "BDT",
+      "images": [
+        {
+          "url": "https://images.unsplash.com/photo-1617137968427-85924c800a22?auto=format&fit=crop&w=900&q=85",
+          "alt": "Classic White Panjabi",
+          "isPrimary": true
+        }
+      ],
+      "attributes": {
+        "colour": "White",
+        "fabric": "Cotton"
+      },
+      "variants": [
+        {
+          "label": "S",
+          "sku": "LB-M01-1",
+          "stock": 1,
+          "price": 2450
+        },
+        {
+          "label": "M",
+          "sku": "LB-M01-2",
+          "stock": 1,
+          "price": 2450
+        },
+        {
+          "label": "L",
+          "sku": "LB-M01-3",
+          "stock": 1,
+          "price": 2450
+        },
+        {
+          "label": "XL",
+          "sku": "LB-M01-4",
+          "stock": 1,
+          "price": 2450
+        },
+        {
+          "label": "XXL",
+          "sku": "LB-M01-5",
+          "stock": 1,
+          "price": 2450
+        }
+      ],
+      "totalStock": 8,
+      "isActive": true,
+      "isFeatured": true,
+      "isNewArrival": false,
+      "tags": [
+        "men",
+        "panjabis",
+        "demo"
+      ]
+    },
+    {
+      "id": "LB-M02",
+      "name": "Everyday Oxford Shirt",
+      "slug": "everyday-oxford-shirt",
+      "categoryId": "men",
+      "subcategoryId": "shirts",
+      "description": "Demo listing for visualizing the Leebazz storefront. Replace with accurate product details before launch.",
+      "price": 1850,
+      "currency": "BDT",
+      "images": [
+        {
+          "url": "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=900&q=85",
+          "alt": "Everyday Oxford Shirt",
+          "isPrimary": true
+        }
+      ],
+      "attributes": {
+        "colour": "Sky Blue",
+        "fabric": "Cotton"
+      },
+      "variants": [
+        {
+          "label": "S",
+          "sku": "LB-M02-1",
+          "stock": 3,
+          "price": 1850
+        },
+        {
+          "label": "M",
+          "sku": "LB-M02-2",
+          "stock": 3,
+          "price": 1850
+        },
+        {
+          "label": "L",
+          "sku": "LB-M02-3",
+          "stock": 3,
+          "price": 1850
+        },
+        {
+          "label": "XL",
+          "sku": "LB-M02-4",
+          "stock": 3,
+          "price": 1850
+        }
+      ],
+      "totalStock": 12,
+      "isActive": true,
+      "isFeatured": false,
+      "isNewArrival": true,
+      "tags": [
+        "men",
+        "shirts",
+        "demo"
+      ]
+    },
+    {
+      "id": "LB-M03",
+      "name": "Casual Cotton Fatua",
+      "slug": "casual-cotton-fatua",
+      "categoryId": "men",
+      "subcategoryId": "fatuas",
+      "description": "Demo listing for visualizing the Leebazz storefront. Replace with accurate product details before launch.",
+      "price": 1250,
+      "currency": "BDT",
+      "images": [
+        {
+          "url": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=900&q=85",
+          "alt": "Casual Cotton Fatua",
+          "isPrimary": true
+        }
+      ],
+      "attributes": {
+        "colour": "Sand",
+        "fabric": "Cotton"
+      },
+      "variants": [
+        {
+          "label": "S",
+          "sku": "LB-M03-1",
+          "stock": 4,
+          "price": 1250
+        },
+        {
+          "label": "M",
+          "sku": "LB-M03-2",
+          "stock": 4,
+          "price": 1250
+        },
+        {
+          "label": "L",
+          "sku": "LB-M03-3",
+          "stock": 4,
+          "price": 1250
+        },
+        {
+          "label": "XL",
+          "sku": "LB-M03-4",
+          "stock": 4,
+          "price": 1250
+        }
+      ],
+      "totalStock": 16,
+      "isActive": true,
+      "isFeatured": false,
+      "isNewArrival": false,
+      "tags": [
+        "men",
+        "fatuas",
+        "demo"
+      ]
+    },
+    {
+      "id": "LB-M04",
+      "name": "Essential Polo Shirt",
+      "slug": "essential-polo-shirt",
+      "categoryId": "men",
+      "subcategoryId": "polos",
+      "description": "Demo listing for visualizing the Leebazz storefront. Replace with accurate product details before launch.",
+      "price": 990,
+      "currency": "BDT",
+      "images": [
+        {
+          "url": "https://images.unsplash.com/photo-1625910513413-5fc45e7d1f5b?auto=format&fit=crop&w=900&q=85",
+          "alt": "Essential Polo Shirt",
+          "isPrimary": true
+        }
+      ],
+      "attributes": {
+        "colour": "Navy",
+        "fabric": "Piqué Cotton"
+      },
+      "variants": [
+        {
+          "label": "S",
+          "sku": "LB-M04-1",
+          "stock": 1,
+          "price": 990
+        },
+        {
+          "label": "M",
+          "sku": "LB-M04-2",
+          "stock": 1,
+          "price": 990
+        },
+        {
+          "label": "L",
+          "sku": "LB-M04-3",
+          "stock": 1,
+          "price": 990
+        },
+        {
+          "label": "XL",
+          "sku": "LB-M04-4",
+          "stock": 1,
+          "price": 990
+        }
+      ],
+      "totalStock": 5,
+      "isActive": true,
+      "isFeatured": false,
+      "isNewArrival": false,
+      "tags": [
+        "men",
+        "polos",
+        "demo"
+      ]
+    },
+    {
+      "id": "LB-K01",
+      "name": "Newborn Soft Cotton Set",
+      "slug": "newborn-soft-cotton-set",
+      "categoryId": "kids",
+      "subcategoryId": "newborn-boys",
+      "description": "Demo listing for visualizing the Leebazz storefront. Replace with accurate product details before launch.",
+      "price": 850,
+      "currency": "BDT",
+      "images": [
+        {
+          "url": "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?auto=format&fit=crop&w=900&q=85",
+          "alt": "Newborn Soft Cotton Set",
+          "isPrimary": true
+        }
+      ],
+      "attributes": {
+        "colour": "Cream",
+        "fabric": "Cotton"
+      },
+      "variants": [
+        {
+          "label": "0–3 months",
+          "sku": "LB-K01-1",
+          "stock": 4,
+          "price": 850
+        },
+        {
+          "label": "3–6 months",
+          "sku": "LB-K01-2",
+          "stock": 4,
+          "price": 850
+        }
+      ],
+      "totalStock": 8,
+      "isActive": true,
+      "isFeatured": false,
+      "isNewArrival": false,
+      "tags": [
+        "kids",
+        "newborn-boys",
+        "demo"
+      ]
+    },
+    {
+      "id": "LB-K02",
+      "name": "Little Blossom Dress",
+      "slug": "little-blossom-dress",
+      "categoryId": "kids",
+      "subcategoryId": "newborn-girls",
+      "description": "Demo listing for visualizing the Leebazz storefront. Replace with accurate product details before launch.",
+      "price": 1150,
+      "currency": "BDT",
+      "images": [
+        {
+          "url": "https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&w=900&q=85",
+          "alt": "Little Blossom Dress",
+          "isPrimary": true
+        }
+      ],
+      "attributes": {
+        "colour": "Peach",
+        "fabric": "Cotton"
+      },
+      "variants": [
+        {
+          "label": "0–3 months",
+          "sku": "LB-K02-1",
+          "stock": 4,
+          "price": 1150
+        },
+        {
+          "label": "3–6 months",
+          "sku": "LB-K02-2",
+          "stock": 4,
+          "price": 1150
+        },
+        {
+          "label": "6–12 months",
+          "sku": "LB-K02-3",
+          "stock": 4,
+          "price": 1150
+        }
+      ],
+      "totalStock": 12,
+      "isActive": true,
+      "isFeatured": false,
+      "isNewArrival": true,
+      "tags": [
+        "kids",
+        "newborn-girls",
+        "demo"
+      ]
+    },
+    {
+      "id": "LB-K03",
+      "name": "Junior Everyday Tee",
+      "slug": "junior-everyday-tee",
+      "categoryId": "kids",
+      "subcategoryId": "junior-boys",
+      "description": "Demo listing for visualizing the Leebazz storefront. Replace with accurate product details before launch.",
+      "price": 550,
+      "currency": "BDT",
+      "images": [
+        {
+          "url": "https://images.unsplash.com/photo-1503919005314-30d93d07d823?auto=format&fit=crop&w=900&q=85",
+          "alt": "Junior Everyday Tee",
+          "isPrimary": true
+        }
+      ],
+      "attributes": {
+        "colour": "Mustard",
+        "fabric": "Cotton"
+      },
+      "variants": [
+        {
+          "label": "2Y",
+          "sku": "LB-K03-1",
+          "stock": 4,
+          "price": 550
+        },
+        {
+          "label": "4Y",
+          "sku": "LB-K03-2",
+          "stock": 4,
+          "price": 550
+        },
+        {
+          "label": "6Y",
+          "sku": "LB-K03-3",
+          "stock": 4,
+          "price": 550
+        },
+        {
+          "label": "8Y",
+          "sku": "LB-K03-4",
+          "stock": 4,
+          "price": 550
+        }
+      ],
+      "totalStock": 16,
+      "isActive": true,
+      "isFeatured": false,
+      "isNewArrival": false,
+      "tags": [
+        "kids",
+        "junior-boys",
+        "demo"
+      ]
+    },
+    {
+      "id": "LB-K04",
+      "name": "Patchwork Cotton Katha",
+      "slug": "patchwork-cotton-katha",
+      "categoryId": "kids",
+      "subcategoryId": "kathas",
+      "description": "Demo listing for visualizing the Leebazz storefront. Replace with accurate product details before launch.",
+      "price": 1450,
+      "currency": "BDT",
+      "images": [
+        {
+          "url": "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=900&q=85",
+          "alt": "Patchwork Cotton Katha",
+          "isPrimary": true
+        }
+      ],
+      "attributes": {
+        "colour": "Multicolour",
+        "fabric": "Cotton"
+      },
+      "variants": [
+        {
+          "label": "Small",
+          "sku": "LB-K04-1",
+          "stock": 2,
+          "price": 1450
+        },
+        {
+          "label": "Large",
+          "sku": "LB-K04-2",
+          "stock": 2,
+          "price": 1450
+        }
+      ],
+      "totalStock": 5,
+      "isActive": true,
+      "isFeatured": false,
+      "isNewArrival": false,
+      "tags": [
+        "kids",
+        "kathas",
+        "demo"
+      ]
+    },
+    {
+      "id": "LB-D01",
+      "name": "Handpainted Dining Platter",
+      "slug": "handpainted-dining-platter",
+      "categoryId": "home-decor",
+      "subcategoryId": "dining-decor",
+      "description": "Demo listing for visualizing the Leebazz storefront. Replace with accurate product details before launch.",
+      "price": 1250,
+      "currency": "BDT",
+      "images": [
+        {
+          "url": "https://images.unsplash.com/photo-1610701596007-11502861dcfa?auto=format&fit=crop&w=900&q=85",
+          "alt": "Handpainted Dining Platter",
+          "isPrimary": true
+        }
+      ],
+      "attributes": {
+        "colour": "Blue & White",
+        "material": "Ceramic",
+        "quality": "Sample artisan finish"
+      },
+      "variants": [
+        {
+          "label": "One Size",
+          "sku": "LB-D01-1",
+          "stock": 8,
+          "price": 1250
+        }
+      ],
+      "totalStock": 8,
+      "isActive": true,
+      "isFeatured": true,
+      "isNewArrival": false,
+      "tags": [
+        "home-decor",
+        "dining-decor",
+        "demo"
+      ]
+    },
+    {
+      "id": "LB-D02",
+      "name": "Embroidered Cushion Cover",
+      "slug": "embroidered-cushion-cover",
+      "categoryId": "home-decor",
+      "subcategoryId": "bedroom-decor",
+      "description": "Demo listing for visualizing the Leebazz storefront. Replace with accurate product details before launch.",
+      "price": 950,
+      "currency": "BDT",
+      "images": [
+        {
+          "url": "https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?auto=format&fit=crop&w=900&q=85",
+          "alt": "Embroidered Cushion Cover",
+          "isPrimary": true
+        }
+      ],
+      "attributes": {
+        "colour": "Terracotta",
+        "material": "Cotton",
+        "quality": "Sample artisan finish"
+      },
+      "variants": [
+        {
+          "label": "16 x 16 in",
+          "sku": "LB-D02-1",
+          "stock": 12,
+          "price": 950
+        }
+      ],
+      "totalStock": 12,
+      "isActive": true,
+      "isFeatured": false,
+      "isNewArrival": false,
+      "tags": [
+        "home-decor",
+        "bedroom-decor",
+        "demo"
+      ]
+    },
+    {
+      "id": "LB-D03",
+      "name": "Moon & Stars Wall Hanging",
+      "slug": "moon-and-stars-wall-hanging",
+      "categoryId": "home-decor",
+      "subcategoryId": "kids-room-decor",
+      "description": "Demo listing for visualizing the Leebazz storefront. Replace with accurate product details before launch.",
+      "price": 750,
+      "currency": "BDT",
+      "images": [
+        {
+          "url": "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=900&q=85",
+          "alt": "Moon & Stars Wall Hanging",
+          "isPrimary": true
+        }
+      ],
+      "attributes": {
+        "colour": "Natural",
+        "material": "Wood & Cotton",
+        "quality": "Sample artisan finish"
+      },
+      "variants": [
+        {
+          "label": "One Size",
+          "sku": "LB-D03-1",
+          "stock": 16,
+          "price": 750
+        }
+      ],
+      "totalStock": 16,
+      "isActive": true,
+      "isFeatured": false,
+      "isNewArrival": false,
+      "tags": [
+        "home-decor",
+        "kids-room-decor",
+        "demo"
+      ]
+    },
+    {
+      "id": "LB-D04",
+      "name": "Artisan Ceramic Vase",
+      "slug": "artisan-ceramic-vase",
+      "categoryId": "home-decor",
+      "subcategoryId": "decor-pieces",
+      "description": "Demo listing for visualizing the Leebazz storefront. Replace with accurate product details before launch.",
+      "price": 1650,
+      "currency": "BDT",
+      "images": [
+        {
+          "url": "https://images.unsplash.com/photo-1578500494198-246f612d3b3d?auto=format&fit=crop&w=900&q=85",
+          "alt": "Artisan Ceramic Vase",
+          "isPrimary": true
+        }
+      ],
+      "attributes": {
+        "colour": "Ivory",
+        "material": "Ceramic",
+        "quality": "Sample artisan finish"
+      },
+      "variants": [
+        {
+          "label": "Small",
+          "sku": "LB-D04-1",
+          "stock": 2,
+          "price": 1650
+        },
+        {
+          "label": "Medium",
+          "sku": "LB-D04-2",
+          "stock": 2,
+          "price": 1650
+        }
+      ],
+      "totalStock": 5,
+      "isActive": true,
+      "isFeatured": false,
+      "isNewArrival": false,
+      "tags": [
+        "home-decor",
+        "decor-pieces",
+        "demo"
+      ]
+    },
+    {
+      "id": "LB-J01",
+      "name": "Antique Gold Jhumka Earrings",
+      "slug": "antique-gold-jhumka-earrings",
+      "categoryId": "jewellery",
+      "subcategoryId": "earrings",
+      "description": "Demo listing for visualizing the Leebazz storefront. Replace with accurate product details before launch.",
+      "price": 1250,
+      "currency": "BDT",
+      "images": [
+        {
+          "url": "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=900&q=85",
+          "alt": "Antique Gold Jhumka Earrings",
+          "isPrimary": true
+        }
+      ],
+      "attributes": {
+        "colour": "Antique Gold",
+        "material": "Alloy"
+      },
+      "variants": [
+        {
+          "label": "One Pair",
+          "sku": "LB-J01-1",
+          "stock": 8,
+          "price": 1250
+        }
+      ],
+      "totalStock": 8,
+      "isActive": true,
+      "isFeatured": true,
+      "isNewArrival": false,
+      "tags": [
+        "jewellery",
+        "earrings",
+        "demo"
+      ]
+    },
+    {
+      "id": "LB-J02",
+      "name": "Beaded Statement Necklace",
+      "slug": "beaded-statement-necklace",
+      "categoryId": "jewellery",
+      "subcategoryId": "necklaces",
+      "description": "Demo listing for visualizing the Leebazz storefront. Replace with accurate product details before launch.",
+      "price": 1750,
+      "currency": "BDT",
+      "images": [
+        {
+          "url": "https://images.unsplash.com/photo-1611652022419-a9419f74343d?auto=format&fit=crop&w=900&q=85",
+          "alt": "Beaded Statement Necklace",
+          "isPrimary": true
+        }
+      ],
+      "attributes": {
+        "colour": "Multicolour",
+        "material": "Beads & Alloy"
+      },
+      "variants": [
+        {
+          "label": "One Size",
+          "sku": "LB-J02-1",
+          "stock": 12,
+          "price": 1750
+        }
+      ],
+      "totalStock": 12,
+      "isActive": true,
+      "isFeatured": false,
+      "isNewArrival": true,
+      "tags": [
+        "jewellery",
+        "necklaces",
+        "demo"
+      ]
+    },
+    {
+      "id": "LB-J03",
+      "name": "Minimal Everyday Ring",
+      "slug": "minimal-everyday-ring",
+      "categoryId": "jewellery",
+      "subcategoryId": "rings",
+      "description": "Demo listing for visualizing the Leebazz storefront. Replace with accurate product details before launch.",
+      "price": 550,
+      "currency": "BDT",
+      "images": [
+        {
+          "url": "https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=900&q=85",
+          "alt": "Minimal Everyday Ring",
+          "isPrimary": true
+        }
+      ],
+      "attributes": {
+        "colour": "Gold Tone",
+        "material": "Stainless Steel"
+      },
+      "variants": [
+        {
+          "label": "6",
+          "sku": "LB-J03-1",
+          "stock": 4,
+          "price": 550
+        },
+        {
+          "label": "7",
+          "sku": "LB-J03-2",
+          "stock": 4,
+          "price": 550
+        },
+        {
+          "label": "8",
+          "sku": "LB-J03-3",
+          "stock": 4,
+          "price": 550
+        },
+        {
+          "label": "9",
+          "sku": "LB-J03-4",
+          "stock": 4,
+          "price": 550
+        }
+      ],
+      "totalStock": 16,
+      "isActive": true,
+      "isFeatured": false,
+      "isNewArrival": false,
+      "tags": [
+        "jewellery",
+        "rings",
+        "demo"
+      ]
+    },
+    {
+      "id": "LB-J04",
+      "name": "Textured Cuff Bracelet",
+      "slug": "textured-cuff-bracelet",
+      "categoryId": "jewellery",
+      "subcategoryId": "bracelets",
+      "description": "Demo listing for visualizing the Leebazz storefront. Replace with accurate product details before launch.",
+      "price": 850,
+      "currency": "BDT",
+      "images": [
+        {
+          "url": "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&w=900&q=85",
+          "alt": "Textured Cuff Bracelet",
+          "isPrimary": true
+        }
+      ],
+      "attributes": {
+        "colour": "Gold Tone",
+        "material": "Alloy"
+      },
+      "variants": [
+        {
+          "label": "Adjustable",
+          "sku": "LB-J04-1",
+          "stock": 5,
+          "price": 850
+        }
+      ],
+      "totalStock": 5,
+      "isActive": true,
+      "isFeatured": false,
+      "isNewArrival": false,
+      "tags": [
+        "jewellery",
+        "bracelets",
+        "demo"
+      ]
+    },
+    {
+      "id": "LB-S01",
+      "name": "Rose Clay Face Pack",
+      "slug": "rose-clay-face-pack",
+      "categoryId": "skincare",
+      "subcategoryId": "face-packs",
+      "description": "Demo listing for visualizing the Leebazz storefront. Replace with accurate product details before launch.",
+      "price": 420,
+      "currency": "BDT",
+      "images": [
+        {
+          "url": "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?auto=format&fit=crop&w=900&q=85",
+          "alt": "Rose Clay Face Pack",
+          "isPrimary": true
+        }
+      ],
+      "attributes": {
+        "colour": "Rose",
+        "scent": "Rose",
+        "formulation": "Clay Blend"
+      },
+      "variants": [
+        {
+          "label": "100 g",
+          "sku": "LB-S01-1",
+          "stock": 8,
+          "price": 420
+        }
+      ],
+      "totalStock": 8,
+      "isActive": true,
+      "isFeatured": true,
+      "isNewArrival": false,
+      "tags": [
+        "skincare",
+        "face-packs",
+        "demo"
+      ]
+    },
+    {
+      "id": "LB-S02",
+      "name": "Gentle Daily Face Wash",
+      "slug": "gentle-daily-face-wash",
+      "categoryId": "skincare",
+      "subcategoryId": "face-wash",
+      "description": "Demo listing for visualizing the Leebazz storefront. Replace with accurate product details before launch.",
+      "price": 550,
+      "currency": "BDT",
+      "images": [
+        {
+          "url": "https://images.unsplash.com/photo-1556229010-6c3f2c9ca5f8?auto=format&fit=crop&w=900&q=85",
+          "alt": "Gentle Daily Face Wash",
+          "isPrimary": true
+        }
+      ],
+      "attributes": {
+        "colour": "Fresh",
+        "scent": "Fresh",
+        "formulation": "Gentle Cleanser"
+      },
+      "variants": [
+        {
+          "label": "100 ml",
+          "sku": "LB-S02-1",
+          "stock": 12,
+          "price": 550
+        }
+      ],
+      "totalStock": 12,
+      "isActive": true,
+      "isFeatured": false,
+      "isNewArrival": true,
+      "tags": [
+        "skincare",
+        "face-wash",
+        "demo"
+      ]
+    },
+    {
+      "id": "LB-S03",
+      "name": "Handmade Herbal Soap",
+      "slug": "handmade-herbal-soap",
+      "categoryId": "skincare",
+      "subcategoryId": "handmade-soaps",
+      "description": "Demo listing for visualizing the Leebazz storefront. Replace with accurate product details before launch.",
+      "price": 280,
+      "currency": "BDT",
+      "images": [
+        {
+          "url": "https://images.unsplash.com/photo-1600857544200-b2f666a9a2ec?auto=format&fit=crop&w=900&q=85",
+          "alt": "Handmade Herbal Soap",
+          "isPrimary": true
+        }
+      ],
+      "attributes": {
+        "colour": "Herbal",
+        "scent": "Herbal",
+        "formulation": "Soap Base"
+      },
+      "variants": [
+        {
+          "label": "100 g",
+          "sku": "LB-S03-1",
+          "stock": 16,
+          "price": 280
+        }
+      ],
+      "totalStock": 16,
+      "isActive": true,
+      "isFeatured": false,
+      "isNewArrival": false,
+      "tags": [
+        "skincare",
+        "handmade-soaps",
+        "demo"
+      ]
+    },
+    {
+      "id": "LB-S04",
+      "name": "Nourishing Hair Oil",
+      "slug": "nourishing-hair-oil",
+      "categoryId": "skincare",
+      "subcategoryId": "hair-oils",
+      "description": "Demo listing for visualizing the Leebazz storefront. Replace with accurate product details before launch.",
+      "price": 720,
+      "currency": "BDT",
+      "images": [
+        {
+          "url": "https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?auto=format&fit=crop&w=900&q=85",
+          "alt": "Nourishing Hair Oil",
+          "isPrimary": true
+        }
+      ],
+      "attributes": {
+        "colour": "Herbal",
+        "scent": "Herbal",
+        "formulation": "Plant Oil Blend"
+      },
+      "variants": [
+        {
+          "label": "100 ml",
+          "sku": "LB-S04-1",
+          "stock": 5,
+          "price": 720
+        }
+      ],
+      "totalStock": 5,
+      "isActive": true,
+      "isFeatured": false,
+      "isNewArrival": false,
+      "tags": [
+        "skincare",
+        "hair-oils",
+        "demo"
+      ]
+    }
+  ],
+  "homepage": {
+    "announcement": "Thoughtfully chosen for every part of your world",
+    "hero": {
+      "eyebrow": "Discover Leebazz",
+      "title": "Tradition in every detail",
+      "subtitle": "Clothing, jewellery, home accents and everyday care for every part of life.",
+      "image": "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=1600&q=85",
+      "primaryCta": {
+        "label": "Explore the collection",
+        "href": "/shop"
+      },
+      "secondaryCta": {
+        "label": "Our story",
+        "href": "/about"
+      }
+    },
+    "featuredCategoryIds": [
+      "women",
+      "men",
+      "kids",
+      "home-decor",
+      "jewellery",
+      "skincare"
+    ],
+    "featuredProductIds": [
+      "LB-W01",
+      "LB-W03",
+      "LB-M01",
+      "LB-D01",
+      "LB-J01",
+      "LB-S01"
+    ]
+  }
+}

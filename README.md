@@ -1,36 +1,91 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Leebazz
 
-## Getting Started
+Leebazz is a responsive, catalog-driven storefront built with Next.js. It brings clothing, jewellery, home accents, and everyday care into one place, with collection browsing, product details, and search.
 
-First, run the development server:
+## Features
+
+- Homepage with promotional banners, featured products, and category collections
+- Shop and category pages with product filtering and sorting
+- Product detail pages, including support for variant and attribute information
+- Search across product names, descriptions, tags, and catalog attributes
+- Contact, privacy policy, and terms pages
+- Shared navigation and footer with optional social links
+- Catalog data kept locally in JSON, behind a small adapter that can later be connected to an API
+
+## Tech stack
+
+- [Next.js](https://nextjs.org/) 16 with the App Router
+- React 19
+- Tailwind CSS 4 and DaisyUI
+- HeroUI, Lucide icons, and React Toastify
+
+## Getting started
+
+### Requirements
+
+- Node.js (use a current LTS release)
+- npm
+
+### Install and run
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to view the storefront. The development server reloads as you edit the app.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Configuration
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Copy `.env.example` to `.env.local` and fill in any values you want to use:
 
-## Learn More
+```env
+NEXT_PUBLIC_CONTACT_EMAIL=
+NEXT_PUBLIC_FACEBOOK_URL=
+NEXT_PUBLIC_INSTAGRAM_URL=
+NEXT_PUBLIC_YOUTUBE_URL=
+```
 
-To learn more about Next.js, take a look at the following resources:
+All values are optional. They provide the contact email and social links shown by the site. Since these use the `NEXT_PUBLIC_` prefix, their values are included in the browser bundle; do not put secrets in them.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Catalog data
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The storefront currently reads its catalog from `public/leebazz-expanded-catalog.json` through `lib/catalog.js`. The catalog supplies product and category information, homepage content, prices, images, and attributes used by the browse and product pages. `public/leebazzCatalog.json` is also included in the project.
 
-## Deploy on Vercel
+When changing the catalog, keep product category IDs, subcategory IDs, and referenced image URLs consistent. Product routes use the product slug; when slugs are duplicated, the product ID is appended to make the route unique.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Project structure
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```text
+app/                  App Router pages and global styles
+  category/           Category and subcategory collections
+  contact/            Contact page
+  privacy-policy/     Privacy policy
+  product/            Product details
+  search/             Search results
+  shop/               Full catalog
+  terms-and-conditions/ Terms and conditions
+components/           Shared storefront UI
+lib/                  Catalog helpers and site configuration
+public/               Catalog JSON and static assets
+```
+
+## Available scripts
+
+```bash
+npm run dev       # Start the local development server
+npm run build     # Create a production build
+npm run start     # Serve the production build
+npm run lint      # Run ESLint
+```
+
+To run the production version locally:
+
+```bash
+npm run build
+npm run start
+```
+
+## Deployment
+
+The app can be deployed to a Next.js-compatible host such as [Vercel](https://vercel.com/). Configure the optional public environment variables in the hosting project settings, then build with `npm run build`.

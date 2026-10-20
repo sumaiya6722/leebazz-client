@@ -29,10 +29,33 @@ export function Header({ categories }) {
   const [open, setOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
   const [failedAvatarUrl, setFailedAvatarUrl] = useState(null);
+  const [newItemBadges, setNewItemBadges] = useState({});
   const accountRef = useRef(null);
   const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
   const user = session?.user;
+
+  useEffect(() => {
+    if (isPending || !user?.id) return;
+    const recordNewItem = (event) => {
+      const resource = event.detail?.resource;
+      if (resource !== "cart" && resource !== "wishlist") return;
+      const key = `${user.id}:${resource}`;
+      setNewItemBadges((current) => ({ ...current, [key]: (current[key] ?? 0) + 1 }));
+    };
+    const clearViewedCollectionBadge = (event) => {
+      const resource = event.detail?.resource;
+      if (resource !== "cart" && resource !== "wishlist") return;
+      const key = `${user.id}:${resource}`;
+      setNewItemBadges((current) => ({ ...current, [key]: 0 }));
+    };
+    window.addEventListener("leebazz:account-item-added", recordNewItem);
+    window.addEventListener("leebazz:account-collection-viewed", clearViewedCollectionBadge);
+    return () => {
+      window.removeEventListener("leebazz:account-item-added", recordNewItem);
+      window.removeEventListener("leebazz:account-collection-viewed", clearViewedCollectionBadge);
+    };
+  }, [isPending, user?.id]);
 
   useEffect(() => {
     if (!accountOpen) return;
@@ -66,6 +89,10 @@ export function Header({ categories }) {
     .map((part) => part.charAt(0).toLocaleUpperCase() + part.slice(1))
     .join(" ");
   const initials = displayName.slice(0, 1).toUpperCase();
+  const cartBadgeKey = user ? `${user.id}:cart` : "";
+  const wishlistBadgeKey = user ? `${user.id}:wishlist` : "";
+  const newCartItems = newItemBadges[cartBadgeKey] ?? 0;
+  const newWishlistItems = newItemBadges[wishlistBadgeKey] ?? 0;
 
   return (
     <>
@@ -126,11 +153,20 @@ export function Header({ categories }) {
               </button>
             </form>
             <Link
-              href="/shop"
-              className="icon-button header-shop"
-              aria-label="Shop"
+              href="/cart"
+              className="icon-button header-shop header-count-link"
+              aria-label={`Cart${newCartItems ? `, ${newCartItems} new ${newCartItems === 1 ? "item" : "items"}` : ""}`}
             >
               <ShoppingBag />
+              {newCartItems > 0 && <span className="header-count-badge" aria-hidden="true">{newCartItems > 99 ? "99+" : newCartItems}</span>}
+            </Link>
+            <Link
+              href="/wishlist"
+              className="icon-button header-wishlist header-count-link"
+              aria-label={`Wishlist${newWishlistItems ? `, ${newWishlistItems} new ${newWishlistItems === 1 ? "item" : "items"}` : ""}`}
+            >
+              <Heart />
+              {newWishlistItems > 0 && <span className="header-count-badge" aria-hidden="true">{newWishlistItems > 99 ? "99+" : newWishlistItems}</span>}
             </Link>
             {user ? (
               <div className="account-menu" ref={accountRef}>

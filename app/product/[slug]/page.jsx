@@ -12,6 +12,7 @@ import {
   primaryImage,
 } from "@/lib/catalog";
 import { ProductCard } from "@/components/storefront";
+import { ProductActions } from "@/components/product-actions";
 
 export async function generateStaticParams() {
   return (await getProducts()).map((product) => ({
@@ -139,6 +140,7 @@ async function ProductContent({ params }) {
               </div>
             </div>
           )}
+          <ProductActions productId={product.id} />
           <p className="demo-note">
             Sample catalog listing. Product details and images are provided for
             demonstration.

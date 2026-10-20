@@ -373,3 +373,62 @@ body, button, input, select, textarea { font-family: var(--site-font); }
 .catalog-loading-price { width:28%; height:10px; }
 @media(max-width:800px) { .catalog-loading-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:25px 12px; } }
 @media(max-width:480px) { .catalog-loading .page-intro { padding:25px 0 35px; } .catalog-loading-grid { gap:23px 9px; } .catalog-loading-title { height:46px; } }
+
+/* Product cart and wishlist actions */
+.product-actions { display:grid; grid-template-columns:1.2fr 1fr; gap:10px; margin:29px 0 18px; }
+.product-action-button { display:flex; min-height:48px; align-items:center; justify-content:center; gap:10px; padding:0 16px; border:1px solid #303a33; background:#303a33; color:#fff; font-size:10px; letter-spacing:.08em; text-transform:uppercase; cursor:pointer; transition:background .2s,border-color .2s,color .2s; }
+.product-action-button:hover:not(:disabled) { border-color:var(--accent); background:var(--accent); }
+.product-action-button:disabled { opacity:.65; cursor:wait; }
+.product-action-wishlist { background:#fff; color:#303a33; }
+.product-action-wishlist:hover:not(:disabled),.product-action-wishlist.is-added { background:var(--paper); color:var(--accent); }
+.product-action-cart.is-added { border-color:#596459; background:#596459; }
+
+/* Signed-in cart and wishlist collections */
+.account-collection { min-height:58vh; padding-top:58px; padding-bottom:90px; }
+.account-collection-heading { padding-bottom:28px; border-bottom:1px solid var(--line); }
+.account-collection-heading h1 { display:flex; align-items:center; gap:13px; margin:12px 0 8px; font:400 clamp(38px,5vw,55px)/1.05 var(--serif); letter-spacing:-.04em; }
+.account-collection-heading h1 svg { color:var(--accent); }
+.account-collection-heading p { margin:0; color:var(--muted); font-size:12px; line-height:1.7; }
+.account-collection-content { display:grid; grid-template-columns:minmax(0,1fr) 270px; gap:55px; padding-top:30px; }
+.account-collection-items { min-width:0; }
+.account-product-row { display:grid; grid-template-columns:120px minmax(0,1fr) auto; gap:22px; align-items:center; padding:20px 0; border-bottom:1px solid var(--line); }
+.account-product-photo { position:relative; display:block; overflow:hidden; aspect-ratio:.82; background:#f0efeb; }
+.account-product-photo img { object-fit:cover; }
+.account-product-info { display:flex; min-width:0; align-items:flex-start; flex-direction:column; gap:8px; }
+.account-product-info>.eyebrow { font-size:8px; }
+.account-product-name { color:var(--ink); font:400 19px/1.25 var(--serif); }
+.account-product-name:hover { color:var(--accent); }
+.account-product-price,.account-product-end strong { color:#5b5b54; font-size:12px; }
+.account-product-end { display:flex; align-items:flex-end; flex-direction:column; gap:18px; }
+.account-remove { display:flex; align-items:center; gap:6px; padding:5px 0; border:0; background:transparent; color:#85857d; font-size:10px; cursor:pointer; }
+.account-remove:hover { color:var(--accent); }
+.account-remove:disabled { opacity:.5; cursor:wait; }
+.cart-quantity { display:inline-flex; align-items:center; gap:13px; margin-top:5px; border:1px solid var(--line); }
+.cart-quantity button { display:grid; width:30px; height:29px; place-items:center; border:0; background:#fff; color:#45453f; cursor:pointer; }
+.cart-quantity button:hover:not(:disabled) { background:var(--paper); }
+.cart-quantity button:disabled { color:#aaa99f; cursor:not-allowed; }
+.cart-quantity span { min-width:13px; text-align:center; font-size:11px; }
+.cart-summary { position:sticky; top:125px; display:flex; align-self:start; flex-direction:column; gap:13px; padding:22px; border:1px solid var(--line); background:var(--paper); }
+.cart-summary>span { color:#77776f; font-size:10px; letter-spacing:.12em; text-transform:uppercase; }
+.cart-summary>strong { color:var(--ink); font:400 25px/1.2 var(--serif); }
+.cart-summary p { margin:3px 0 0; color:#85857d; font-size:10px; line-height:1.65; }
+.account-collection-empty { display:flex; min-height:310px; align-items:center; flex-direction:column; justify-content:center; padding:40px 20px; text-align:center; }
+.account-empty-icon { display:grid; width:54px; height:54px; place-items:center; margin-bottom:12px; border:1px solid var(--line); border-radius:50%; color:var(--accent); }
+.account-collection-empty h2 { margin:5px 0 8px; font:400 30px/1.15 var(--serif); }
+.account-collection-empty p { margin:0 0 20px; color:#77776f; font-size:12px; line-height:1.7; }
+.account-collection-skeleton { display:grid; gap:18px; padding-top:30px; }
+.account-row-skeleton { display:grid; grid-template-columns:120px 1fr 100px; gap:22px; align-items:center; padding:0 0 18px; border-bottom:1px solid var(--line); }
+.account-row-skeleton .skeleton-block { aspect-ratio:.82; }
+.account-row-skeleton .skeleton-line { width:65%; }
+.account-row-skeleton .skeleton-line:last-child { width:80%; }
+@media(max-width:800px) { .account-collection { padding-top:40px; padding-bottom:60px; } .account-collection-content { grid-template-columns:1fr; gap:28px; } .cart-summary { position:static; } }
+@media(max-width:600px) { .product-actions { grid-template-columns:1fr; } .account-product-row { grid-template-columns:88px minmax(0,1fr) auto; gap:12px; } .account-product-name { font-size:16px; } .account-product-end strong { font-size:10px; } .account-product-end { gap:12px; } .account-remove { font-size:9px; } .account-row-skeleton { grid-template-columns:88px 1fr 60px; gap:12px; } }
+@media(max-width:480px) { .header-top { grid-template-columns:34px minmax(0,1fr) auto; column-gap:6px; } .header-top>.wordmark { font-size:30px; } .header-actions { gap:5px; } .header-actions .header-shop { display:grid!important; padding:2px; } .account-name { max-width:54px; font-size:9px; } }
+
+/* Cart and wishlist shortcuts with live item counts. */
+.header-count-link { position:relative; }
+.header-actions .header-count-link { display:grid; width:30px; height:34px; place-items:center; padding:4px; }
+.header-count-link svg { width:19px; height:19px; }
+.header-count-badge { position:absolute; top:0; right:-2px; display:grid; min-width:16px; height:16px; place-items:center; padding:0 4px; border:1px solid #fff; border-radius:999px; background:var(--accent); color:#fff; font:700 9px/1 Arial,Helvetica,sans-serif; }
+.header-count-link:hover { color:var(--accent); }
+@media(max-width:800px) { .header-actions .header-count-link { display:grid!important; width:25px; height:30px; padding:2px; } .header-count-badge { top:-1px; right:-4px; min-width:14px; height:14px; font-size:8px; } }

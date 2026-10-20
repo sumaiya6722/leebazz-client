@@ -37,7 +37,7 @@ Open [http://localhost:3000](http://localhost:3000) to view the storefront. The 
 
 ## Configuration
 
-Copy `.env.example` to `.env.local` and fill in any values you want to use:
+Edit the project's `.env` file and fill in any values you want to use:
 
 ```env
 NEXT_PUBLIC_CONTACT_EMAIL=
@@ -46,7 +46,7 @@ NEXT_PUBLIC_INSTAGRAM_URL=
 NEXT_PUBLIC_YOUTUBE_URL=
 ```
 
-All values are optional. They provide the contact email and social links shown by the site. Since these use the `NEXT_PUBLIC_` prefix, their values are included in the browser bundle; do not put secrets in them.
+All values are optional. They provide the contact email and social links shown by the site. Since these use the `NEXT_PUBLIC_` prefix, their values are included in the browser bundle; do not put secrets in them. The `.env` file is ignored by Git, so create it separately when setting up another checkout.
 
 ## Catalog data
 

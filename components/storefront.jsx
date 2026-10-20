@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Search,
   SlidersHorizontal,
@@ -9,7 +10,14 @@ import {
   X,
   ArrowUpRight,
   ShoppingBag,
+  UserRound,
+  Heart,
+  ShoppingCart,
+  PackageCheck,
+  LogOut,
+  ChevronDown,
 } from "lucide-react";
+import { authClient } from "@/lib/auth-client";
 import {
   formatPrice,
   getAttributeValues,
@@ -19,6 +27,42 @@ import {
 
 export function Header({ categories }) {
   const [open, setOpen] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
+  const [failedAvatarUrl, setFailedAvatarUrl] = useState(null);
+  const accountRef = useRef(null);
+  const router = useRouter();
+  const { data: session, isPending } = authClient.useSession();
+  const user = session?.user;
+
+  useEffect(() => {
+    if (!accountOpen) return;
+    const closeOnOutsideClick = (event) => {
+      if (!accountRef.current?.contains(event.target)) setAccountOpen(false);
+    };
+    const closeOnEscape = (event) => {
+      if (event.key === "Escape") setAccountOpen(false);
+    };
+    document.addEventListener("mousedown", closeOnOutsideClick);
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.removeEventListener("mousedown", closeOnOutsideClick);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [accountOpen]);
+
+  const logOut = async () => {
+    try {
+      await authClient.signOut();
+      setAccountOpen(false);
+      router.refresh();
+    } catch (error) {
+      console.error("Log out error:", error);
+    }
+  };
+
+  const displayName = user?.name?.trim() || user?.email?.split("@")[0] || "Account";
+  const initials = displayName.slice(0, 1).toUpperCase();
+
   return (
     <>
       <div className="announcement">
@@ -84,12 +128,46 @@ export function Header({ categories }) {
             >
               <ShoppingBag />
             </Link>
-            <Link href="/login" className="header-login">
-              Login
-            </Link>
-            <Link href="/signup" className="header-signup">
-              Sign up
-            </Link>
+            {user ? (
+              <div className="account-menu" ref={accountRef}>
+                <button
+                  type="button"
+                  className="account-trigger"
+                  aria-label={`Account menu for ${displayName}`}
+                  aria-haspopup="menu"
+                  aria-expanded={accountOpen}
+                  onClick={() => setAccountOpen((value) => !value)}
+                >
+                  <span className="account-avatar" aria-hidden="true">
+                    {user.image && user.image !== failedAvatarUrl ? (
+                      <img src={user.image} alt="" onError={() => setFailedAvatarUrl(user.image)} />
+                    ) : <span>{initials}</span>}
+                  </span>
+                  <span className="account-name">{displayName}</span>
+                  <ChevronDown size={15} aria-hidden="true" className={accountOpen ? "account-chevron is-open" : "account-chevron"} />
+                </button>
+                {accountOpen && (
+                  <nav className="account-dropdown" aria-label="Account menu" role="menu">
+                    <div className="account-dropdown-heading">
+                      <span>Signed in as</span>
+                      <strong>{displayName}</strong>
+                    </div>
+                    <Link href="/profile" role="menuitem" onClick={() => setAccountOpen(false)}><UserRound size={16} />My profile</Link>
+                    <Link href="/cart" role="menuitem" onClick={() => setAccountOpen(false)}><ShoppingCart size={16} />My cart</Link>
+                    <Link href="/wishlist" role="menuitem" onClick={() => setAccountOpen(false)}><Heart size={16} />My wishlist</Link>
+                    <Link href="/orders" role="menuitem" onClick={() => setAccountOpen(false)}><PackageCheck size={16} />My order</Link>
+                    <button type="button" role="menuitem" onClick={logOut}><LogOut size={16} />Log out</button>
+                  </nav>
+                )}
+              </div>
+            ) : !isPending ? (
+              <>
+                <Link href="/login" className="header-login">Login</Link>
+                <Link href="/signUp" className="header-signup">Sign up</Link>
+              </>
+            ) : (
+              <span className="account-loading" aria-label="Loading account" />
+            )}
           </div>
         </div>
       </header>

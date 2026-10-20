@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -15,7 +16,6 @@ import {
   ShoppingCart,
   PackageCheck,
   LogOut,
-  ChevronDown,
 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import {
@@ -61,6 +61,10 @@ export function Header({ categories }) {
   };
 
   const displayName = user?.name?.trim() || user?.email?.split("@")[0] || "Account";
+  const greetingName = displayName
+    .split(/\s+/)
+    .map((part) => part.charAt(0).toLocaleUpperCase() + part.slice(1))
+    .join(" ");
   const initials = displayName.slice(0, 1).toUpperCase();
 
   return (
@@ -130,6 +134,7 @@ export function Header({ categories }) {
             </Link>
             {user ? (
               <div className="account-menu" ref={accountRef}>
+                <span className="account-name">Hi, {greetingName}!</span>
                 <button
                   type="button"
                   className="account-trigger"
@@ -140,11 +145,16 @@ export function Header({ categories }) {
                 >
                   <span className="account-avatar" aria-hidden="true">
                     {user.image && user.image !== failedAvatarUrl ? (
-                      <img src={user.image} alt="" onError={() => setFailedAvatarUrl(user.image)} />
+                      <Image
+                        src={user.image}
+                        alt=""
+                        width={35}
+                        height={35}
+                        unoptimized
+                        onError={() => setFailedAvatarUrl(user.image)}
+                      />
                     ) : <span>{initials}</span>}
                   </span>
-                  <span className="account-name">{displayName}</span>
-                  <ChevronDown size={15} aria-hidden="true" className={accountOpen ? "account-chevron is-open" : "account-chevron"} />
                 </button>
                 {accountOpen && (
                   <nav className="account-dropdown" aria-label="Account menu" role="menu">
@@ -182,11 +192,13 @@ export function ProductCard({ product, categoryName }) {
         href={`/product/${getProductRouteKey(product)}`}
         className="product-image"
       >
-        <img
+        <Image
           src={primaryImage(product)}
           alt={
             product.images.find((image) => image.isPrimary)?.alt ?? product.name
           }
+          fill
+          sizes="(max-width: 800px) 50vw, (max-width: 1320px) 25vw, 330px"
           loading="lazy"
         />
         <span className="image-arrow">

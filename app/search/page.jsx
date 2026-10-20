@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { getCatalog, getProducts } from "@/lib/catalog";
 import { ProductGrid } from "@/components/storefront";
+import { CatalogLoading } from "@/components/catalog-loading";
 
 async function SearchResults({ searchParams }) {
   const { q = "" } = await searchParams;
@@ -36,16 +37,7 @@ async function SearchResults({ searchParams }) {
 
 export default function SearchPage(props) {
   return (
-    <Suspense
-      fallback={
-        <main className="page-shell wrap">
-          <div className="page-intro">
-            <span className="eyebrow">SEARCH LEEBAZZ</span>
-            <h1>Search the collection</h1>
-          </div>
-        </main>
-      }
-    >
+    <Suspense fallback={<CatalogLoading label="search results" />}>
       <SearchResults {...props} />
     </Suspense>
   );

@@ -1,7 +1,9 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { getCatalog, getProducts } from "@/lib/catalog";
 import { ProductGrid } from "@/components/storefront";
+import { CatalogLoading } from "@/components/catalog-loading";
 
 export async function generateStaticParams() {
   return (await getCatalog()).categories.map((category) => ({
@@ -9,7 +11,7 @@ export async function generateStaticParams() {
   }));
 }
 
-export default async function CategoryPage({ params }) {
+async function CategoryContent({ params }) {
   const { categoryId } = await params;
   const [catalog, all] = await Promise.all([getCatalog(), getProducts()]);
   const category = catalog.categories.find((c) => c.id === categoryId);
@@ -49,5 +51,13 @@ export default async function CategoryPage({ params }) {
         filterKeys={category.filters}
       />
     </main>
+  );
+}
+
+export default function CategoryPage({ params }) {
+  return (
+    <Suspense fallback={<CatalogLoading label="category" showBreadcrumbs />}>
+      <CategoryContent params={params} />
+    </Suspense>
   );
 }

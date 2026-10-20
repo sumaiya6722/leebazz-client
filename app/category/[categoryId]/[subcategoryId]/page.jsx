@@ -1,7 +1,9 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { getCatalog, getProducts } from "@/lib/catalog";
 import { ProductGrid } from "@/components/storefront";
+import { CatalogLoading } from "@/components/catalog-loading";
 
 export async function generateStaticParams() {
   const catalog = await getCatalog();
@@ -13,7 +15,7 @@ export async function generateStaticParams() {
   );
 }
 
-export default async function SubcategoryPage({ params }) {
+async function SubcategoryContent({ params }) {
   const { categoryId, subcategoryId } = await params;
   const [catalog, all] = await Promise.all([getCatalog(), getProducts()]);
   const category = catalog.categories.find((c) => c.id === categoryId);
@@ -58,5 +60,13 @@ export default async function SubcategoryPage({ params }) {
         filterKeys={category.filters}
       />
     </main>
+  );
+}
+
+export default function SubcategoryPage({ params }) {
+  return (
+    <Suspense fallback={<CatalogLoading label="subcategory" showBreadcrumbs />}>
+      <SubcategoryContent params={params} />
+    </Suspense>
   );
 }

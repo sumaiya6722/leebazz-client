@@ -1,4 +1,6 @@
 import Link from "next/link";
+import Image from "next/image";
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import {
@@ -17,7 +19,52 @@ export async function generateStaticParams() {
   }));
 }
 
-export default async function ProductPage({ params }) {
+function ProductLoading() {
+  return (
+    <main className="wrap detail-page product-loading" aria-busy="true" aria-label="Loading product details">
+      <span className="sr-only" role="status">Loading product details…</span>
+      <div className="breadcrumbs" aria-hidden="true">
+        <span className="skeleton-line skeleton-crumb" />
+        <span>/</span>
+        <span className="skeleton-line skeleton-crumb" />
+        <span>/</span>
+        <span className="skeleton-line skeleton-crumb skeleton-crumb-wide" />
+      </div>
+      <div className="detail-layout">
+        <div className="detail-photo skeleton-block" aria-hidden="true" />
+        <section className="detail-info" aria-hidden="true">
+          <span className="skeleton-line skeleton-kicker" />
+          <span className="skeleton-line skeleton-title" />
+          <span className="skeleton-line skeleton-title skeleton-title-short" />
+          <span className="skeleton-line skeleton-price" />
+          <span className="skeleton-line skeleton-copy" />
+          <span className="skeleton-line skeleton-copy skeleton-copy-short" />
+          <div className="skeleton-rule" />
+          <span className="skeleton-line skeleton-kicker" />
+          <span className="skeleton-line skeleton-attribute" />
+          <span className="skeleton-line skeleton-attribute" />
+          <span className="skeleton-line skeleton-attribute" />
+          <span className="skeleton-line skeleton-action" />
+        </section>
+      </div>
+      <div className="product-loading-related" aria-hidden="true">
+        <span className="skeleton-line skeleton-kicker" />
+        <span className="skeleton-line skeleton-related-title" />
+        <div className="product-loading-grid">
+          {Array.from({ length: 4 }, (_, index) => (
+            <div className="product-loading-card" key={index}>
+              <div className="skeleton-block" />
+              <span className="skeleton-line" />
+              <span className="skeleton-line skeleton-related-name" />
+            </div>
+          ))}
+        </div>
+      </div>
+    </main>
+  );
+}
+
+async function ProductContent({ params }) {
   const { slug } = await params;
   const [catalog, product, all] = await Promise.all([
     getCatalog(),
@@ -47,12 +94,14 @@ export default async function ProductPage({ params }) {
       </div>
       <div className="detail-layout">
         <div className="detail-photo">
-          <img
+          <Image
             src={primaryImage(product)}
             alt={
               product.images.find((image) => image.isPrimary)?.alt ??
               product.name
             }
+            fill
+            sizes="(max-width: 800px) 100vw, 55vw"
           />
           <span>LEebazz / {product.id}</span>
         </div>
@@ -122,5 +171,13 @@ export default async function ProductPage({ params }) {
         </section>
       )}
     </main>
+  );
+}
+
+export default function ProductPage({ params }) {
+  return (
+    <Suspense fallback={<ProductLoading />}>
+      <ProductContent params={params} />
+    </Suspense>
   );
 }

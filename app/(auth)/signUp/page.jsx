@@ -74,20 +74,20 @@ export default function SignUp() {
             <FieldGroup className="signup-fields">
               <TextField isRequired name="name" validate={(value) => value.length < 3 ? 'Name must be at least 3 characters' : null}>
                 <Label>Name</Label>
-                <Input autoComplete="name" placeholder="John Doe" />
+                <Input autoComplete="name" />
                 <FieldError />
               </TextField>
 
               <TextField name="image" type="url" validate={(value) => value && !/^https?:\/\/.+/i.test(value) ? 'Please enter a valid image URL (e.g. https://...)' : null}>
                 <Label>Profile photo URL <span className="signup-optional">Optional</span></Label>
-                <Input placeholder="https://example.com/photo.jpg" />
+                <Input />
                 <Description>Link to an image you’d like to use as your avatar.</Description>
                 <FieldError />
               </TextField>
 
               <TextField isRequired name="email" type="email" validate={(value) => !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(value) ? 'Please enter a valid email address' : null}>
                 <Label>Email</Label>
-                <Input autoComplete="email" placeholder="john@example.com" />
+                <Input autoComplete="email" />
                 <FieldError />
               </TextField>
 
@@ -98,7 +98,7 @@ export default function SignUp() {
                 return null;
               }}>
                 <Label>Password</Label>
-                <Input autoComplete="new-password" placeholder="Create a password" />
+                <Input autoComplete="new-password" />
                 <Description>At least 6 characters, with 1 uppercase letter and 1 number.</Description>
                 <FieldError />
               </TextField>

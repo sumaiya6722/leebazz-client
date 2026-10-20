@@ -1,5 +1,15 @@
 const nextConfig = {
   /* config options here */
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "**",
+        port: "",
+        pathname: "/**",
+      },
+    ],
+  },
   experimental: {
     agentFeedback: true,
     workerThreads: true,

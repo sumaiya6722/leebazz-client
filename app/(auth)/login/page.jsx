@@ -69,13 +69,13 @@ export default function LogIn() {
               <FieldGroup className="login-fields">
                 <TextField isRequired name="email" type="email" validate={(value) => !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(value) ? 'Please enter a valid email address' : null}>
                   <Label>Email</Label>
-                  <Input autoComplete="email" placeholder="you@example.com" />
+                  <Input autoComplete="email" />
                   <FieldError />
                 </TextField>
 
                 <TextField isRequired minLength={6} name="password" type="password" validate={(value) => value.length < 6 ? 'Password must be at least 6 characters' : null}>
                   <Label>Password</Label>
-                  <Input autoComplete="current-password" placeholder="Enter your password" />
+                  <Input autoComplete="current-password" />
                   <FieldError />
                 </TextField>
               </FieldGroup>

@@ -30,6 +30,7 @@ export default function SignUp() {
         email: user.email,
         password: user.password,
         image: user?.image || '',
+        role: user?.role,
         callbackURL: '/',
       });
 
@@ -102,6 +103,26 @@ export default function SignUp() {
                 <Description>At least 6 characters, with 1 uppercase letter and 1 number.</Description>
                 <FieldError />
               </TextField>
+
+              <fieldset className="signup-role-group">
+                <legend>Account type</legend>
+                <label className="signup-role-option">
+                  <input type="radio" name="role" value="user" defaultChecked />
+                  <span className="signup-role-copy">
+                    <span className="signup-role-title">Customer</span>
+                    <span className="signup-role-description">Browse and shop the collection.</span>
+                  </span>
+                  <span className="signup-role-check" aria-hidden="true" />
+                </label>
+                <div className="signup-role-option signup-role-option-locked" aria-describedby="admin-role-note">
+                  <span className="signup-role-indicator" aria-hidden="true" />
+                  <span className="signup-role-copy">
+                    <span className="signup-role-title">Administrator</span>
+                    <span className="signup-role-description" id="admin-role-note">Administrator access is assigned by the site owner.</span>
+                  </span>
+                  <span className="signup-role-badge">Invite only</span>
+                </div>
+              </fieldset>
             </FieldGroup>
 
             <Fieldset.Actions className="signup-actions">

@@ -130,17 +130,7 @@ async function ProductContent({ params }) {
               </div>
             ))}
           </dl>
-          {product.variants.length > 1 && (
-            <div className="variant-block">
-              <span className="detail-label">Available options</span>
-              <div className="variant-list">
-                {product.variants.map((variant) => (
-                  <span key={variant.sku}>{variant.label}</span>
-                ))}
-              </div>
-            </div>
-          )}
-          <ProductActions productId={product.id} />
+          <ProductActions productId={product.id} variants={product.variants} />
           <p className="demo-note">
             Sample catalog listing. Product details and images are provided for
             demonstration.

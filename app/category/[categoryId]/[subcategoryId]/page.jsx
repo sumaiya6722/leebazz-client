@@ -15,6 +15,24 @@ export async function generateStaticParams() {
   );
 }
 
+export async function generateMetadata({ params }) {
+  const { categoryId, subcategoryId } = await params;
+  const catalog = await getCatalog();
+  const category = catalog.categories.find((item) => item.id === categoryId);
+  const subcategory = category?.subcategories.find(
+    (item) => item.id === subcategoryId,
+  );
+
+  return {
+    title: subcategory
+      ? `${subcategory.name} | ${category.name} | Leebazz`
+      : "Category | Leebazz",
+    description: subcategory
+      ? `Shop ${subcategory.name} from the ${category.name} collection at Leebazz.`
+      : "Explore the Leebazz collection.",
+  };
+}
+
 async function SubcategoryContent({ params }) {
   const { categoryId, subcategoryId } = await params;
   const [catalog, all] = await Promise.all([getCatalog(), getProducts()]);

@@ -34,6 +34,7 @@ export function Header({ categories }) {
   const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
   const user = session?.user;
+  // console.log('user role is',user.role);
 
   useEffect(() => {
     if (isPending || !user?.id) return;
@@ -267,8 +268,14 @@ export function ProductCard({ product, categoryName }) {
 export function ProductGrid({ products, categories, filterKeys, query = "" }) {
   const [sort, setSort] = useState("featured");
   const [filters, setFilters] = useState({});
-  const [minPrice, setMinPrice] = useState("");
-  const [maxPrice, setMaxPrice] = useState("");
+  const [priceRange, setPriceRange] = useState("");
+  const priceRanges = useMemo(() => {
+    const bands = [{ min: 0, max: 1000 }, { min: 1000, max: 2500 }, { min: 2500, max: 5000 }, { min: 5000, max: Infinity }];
+    return bands.flatMap((band, index) => {
+      const prices = products.filter((product) => product.price >= band.min && product.price < band.max).map((product) => product.price);
+      return prices.length ? [{ ...band, index, lowest: Math.min(...prices), highest: Math.max(...prices) }] : [];
+    });
+  }, [products]);
   const filterChoices = useMemo(() => {
     return Object.fromEntries(
       filterKeys.map((key) => {
@@ -295,8 +302,10 @@ export function ProductGrid({ products, categories, filterKeys, query = "" }) {
         `${product.name} ${product.description} ${product.tags.join(" ")} ${attributes} ${category?.name ?? ""} ${subcategory?.name ?? ""}`.toLowerCase();
       return (
         (!q || text.includes(q)) &&
-        (!minPrice || product.price >= Number(minPrice)) &&
-        (!maxPrice || product.price <= Number(maxPrice)) &&
+        (!priceRange || (() => {
+          const range = priceRanges.find((item) => item.index === Number(priceRange));
+          return !range || (product.price >= range.min && product.price < range.max);
+        })()) &&
         Object.entries(filters).every(
           ([key, value]) =>
             !value || getAttributeValues(product, key).includes(value),
@@ -312,7 +321,7 @@ export function ProductGrid({ products, categories, filterKeys, query = "" }) {
             ? a.name.localeCompare(b.name)
             : Number(b.isFeatured) - Number(a.isFeatured),
     );
-  }, [products, categories, query, filters, sort, minPrice, maxPrice]);
+  }, [products, categories, query, filters, sort, priceRange, priceRanges]);
   return (
     <>
       <div className="catalog-tools">
@@ -341,24 +350,17 @@ export function ProductGrid({ products, categories, filterKeys, query = "" }) {
             )}
           {filterKeys.includes("price") && (
             <div className="price-filter">
-              <span>BDT</span>
-              <input
-                aria-label="Minimum price"
-                type="number"
-                min="0"
-                placeholder="Min"
-                value={minPrice}
-                onChange={(e) => setMinPrice(e.target.value)}
-              />
-              <span>–</span>
-              <input
-                aria-label="Maximum price"
-                type="number"
-                min="0"
-                placeholder="Max"
-                value={maxPrice}
-                onChange={(e) => setMaxPrice(e.target.value)}
-              />
+              <label>
+                <span className="sr-only">Filter by price range</span>
+                <select value={priceRange} onChange={(e) => setPriceRange(e.target.value)}>
+                  <option value="">Price range</option>
+                  {priceRanges.map((range) => (
+                    <option key={range.index} value={range.index}>
+                      BDT {range.lowest.toLocaleString("en-BD")}–{range.highest.toLocaleString("en-BD")}
+                    </option>
+                  ))}
+                </select>
+              </label>
             </div>
           )}
         </div>

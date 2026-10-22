@@ -11,6 +11,19 @@ export async function generateStaticParams() {
   }));
 }
 
+export async function generateMetadata({ params }) {
+  const { categoryId } = await params;
+  const catalog = await getCatalog();
+  const category = catalog.categories.find((item) => item.id === categoryId);
+
+  return {
+    title: category ? `${category.name} | Leebazz` : "Category | Leebazz",
+    description: category
+      ? `Shop the ${category.name} collection at Leebazz.`
+      : "Explore the Leebazz collection.",
+  };
+}
+
 async function CategoryContent({ params }) {
   const { categoryId } = await params;
   const [catalog, all] = await Promise.all([getCatalog(), getProducts()]);

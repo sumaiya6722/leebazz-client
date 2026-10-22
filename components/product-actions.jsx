@@ -7,13 +7,16 @@ import { toast } from "react-toastify";
 import { authClient } from "@/lib/auth-client";
 import { requestAccountCollection } from "@/lib/account-api";
 
-export function ProductActions({ productId }) {
+export function ProductActions({ productId, variants = [] }) {
   const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
   const userId = session?.user?.id;
   const [inCart, setInCart] = useState(false);
   const [inWishlist, setInWishlist] = useState(false);
   const [busy, setBusy] = useState("");
+  const [selectedSku, setSelectedSku] = useState(variants.length === 1 ? variants[0].sku : "");
+  const selectedVariant = variants.find((variant) => variant.sku === selectedSku);
+  const needsChoice = variants.length > 1;
 
   useEffect(() => {
     if (isPending || !userId) return;
@@ -24,14 +27,14 @@ export function ProductActions({ productId }) {
     ])
       .then(([cart, wishlist]) => {
         if (!active) return;
-        setInCart(cart.items.some((item) => item.id === productId));
+        setInCart(cart.items.some((item) => item.id === productId && (!selectedSku || item.selectedVariant?.sku === selectedSku)));
         setInWishlist(wishlist.items.some((item) => item.id === productId));
       })
       .catch(() => {});
     return () => {
       active = false;
     };
-  }, [isPending, userId, productId]);
+  }, [isPending, userId, productId, selectedSku]);
 
   async function toggleWishlist() {
     if (isPending || busy) return;
@@ -58,6 +61,10 @@ export function ProductActions({ productId }) {
 
   async function addToCart() {
     if (isPending || busy) return;
+    if (needsChoice && !selectedVariant) {
+      toast.info("Choose a size before adding this product to your cart.");
+      return;
+    }
     if (!session?.user) {
       toast.info("Please log in to add products to your cart.");
       return;
@@ -68,7 +75,7 @@ export function ProductActions({ productId }) {
     }
     setBusy("cart");
     try {
-      await requestAccountCollection("cart", "POST", { productId });
+      await requestAccountCollection("cart", "POST", { productId, variantSku: selectedVariant?.sku });
       setInCart(true);
       toast.success("Added to your cart.");
     } catch (error) {
@@ -79,6 +86,18 @@ export function ProductActions({ productId }) {
   }
 
   return (
+    <>
+      {needsChoice && <fieldset className="variant-block size-picker">
+        <legend className="detail-label">Choose a size</legend>
+        <div className="variant-list">
+          {variants.map((variant) => (
+            <label className={selectedSku === variant.sku ? "selected" : ""} key={variant.sku}>
+              <input type="radio" name={`size-${productId}`} value={variant.sku} checked={selectedSku === variant.sku} onChange={() => setSelectedSku(variant.sku)} />
+              <span>{variant.label}</span>
+            </label>
+          ))}
+        </div>
+      </fieldset>}
     <div className="product-actions" aria-label="Save or add this product">
       <button
         type="button"
@@ -100,5 +119,6 @@ export function ProductActions({ productId }) {
         {busy === "wishlist" ? "Saving…" : inWishlist ? "Saved to wishlist" : "Add to wishlist"}
       </button>
     </div>
+    </>
   );
 }

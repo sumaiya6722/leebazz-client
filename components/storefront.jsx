@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Search,
   SlidersHorizontal,
@@ -13,11 +13,15 @@ import {
   ShoppingBag,
   UserRound,
   Heart,
+  Mail,
   ShoppingCart,
   PackageCheck,
   LogOut,
+  LayoutDashboard,
 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
+import { requestAccountCollection } from "@/lib/account-api";
+import { toast } from "react-toastify";
 import {
   formatPrice,
   getAttributeValues,
@@ -32,8 +36,10 @@ export function Header({ categories }) {
   const [newItemBadges, setNewItemBadges] = useState({});
   const accountRef = useRef(null);
   const router = useRouter();
+  const pathname = usePathname();
   const { data: session, isPending } = authClient.useSession();
   const user = session?.user;
+  const isAdmin = user?.role === "admin";
   // console.log('user role is',user.role);
 
   useEffect(() => {
@@ -94,6 +100,8 @@ export function Header({ categories }) {
   const wishlistBadgeKey = user ? `${user.id}:wishlist` : "";
   const newCartItems = newItemBadges[cartBadgeKey] ?? 0;
   const newWishlistItems = newItemBadges[wishlistBadgeKey] ?? 0;
+
+  if (pathname?.startsWith("/admin")) return null;
 
   return (
     <>
@@ -202,7 +210,9 @@ export function Header({ categories }) {
                     <Link href="/profile" role="menuitem" onClick={() => setAccountOpen(false)}><UserRound size={16} />My profile</Link>
                     <Link href="/cart" role="menuitem" onClick={() => setAccountOpen(false)}><ShoppingCart size={16} />My cart</Link>
                     <Link href="/wishlist" role="menuitem" onClick={() => setAccountOpen(false)}><Heart size={16} />My wishlist</Link>
-                    <Link href="/orders" role="menuitem" onClick={() => setAccountOpen(false)}><PackageCheck size={16} />My order</Link>
+                    {isAdmin && <Link href="/admin" role="menuitem" onClick={() => setAccountOpen(false)}><LayoutDashboard size={16} />Admin dashboard</Link>}
+                    {isAdmin && <Link href="/admin/faq-queries" role="menuitem" onClick={() => setAccountOpen(false)}><Mail size={16} />Customer questions</Link>}
+                    <Link href="/profile#purchase-history" role="menuitem" onClick={() => setAccountOpen(false)}><PackageCheck size={16} />My order</Link>
                     <button type="button" role="menuitem" onClick={logOut}><LogOut size={16} />Log out</button>
                   </nav>
                 )}
@@ -223,25 +233,22 @@ export function Header({ categories }) {
 }
 
 export function ProductCard({ product, categoryName }) {
+  const productId = product.id ?? product._id;
   return (
     <article className="product-card">
-      <Link
-        href={`/product/${getProductRouteKey(product)}`}
-        className="product-image"
-      >
-        <Image
-          src={primaryImage(product)}
-          alt={
-            product.images.find((image) => image.isPrimary)?.alt ?? product.name
-          }
-          fill
-          sizes="(max-width: 800px) 50vw, (max-width: 1320px) 25vw, 330px"
-          loading="lazy"
-        />
-        <span className="image-arrow">
-          <ArrowUpRight size={17} />
-        </span>
-      </Link>
+      <div className="product-image-wrap">
+        <Link href={`/product/${getProductRouteKey(product)}`} className="product-image">
+          <Image
+            src={primaryImage(product)}
+            alt={product.images.find((image) => image.isPrimary)?.alt ?? product.name}
+            fill
+            sizes="(max-width: 800px) 50vw, (max-width: 1320px) 25vw, 330px"
+            loading="lazy"
+          />
+          <span className="image-arrow"><ArrowUpRight size={17} /></span>
+        </Link>
+        <ProductImageWishlist productId={productId} productName={product.name} />
+      </div>
       <div className="product-meta">
         <span>{categoryName}</span>
         <span>
@@ -262,6 +269,68 @@ export function ProductCard({ product, categoryName }) {
         {formatPrice(product.price, product.currency)}
       </div>
     </article>
+  );
+}
+
+function ProductImageWishlist({ productId, productName }) {
+  const { data: session, isPending } = authClient.useSession();
+  const [inWishlist, setInWishlist] = useState(false);
+  const [inCart, setInCart] = useState(false);
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    if (isPending || !session?.user || !productId) return;
+    let active = true;
+    Promise.all([
+      requestAccountCollection("wishlist", "GET"),
+      requestAccountCollection("cart", "GET"),
+    ])
+      .then(([wishlist, cart]) => {
+        if (!active) return;
+        setInWishlist(wishlist.items.some((item) => item.id === productId));
+        setInCart(cart.items.some((item) => item.id === productId));
+      })
+      .catch(() => {});
+    return () => { active = false; };
+  }, [isPending, session?.user?.id, productId]);
+
+  async function toggleWishlist(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    if (busy || isPending) return;
+    if (!session?.user) {
+      toast.info("Please log in to save products to your wishlist.");
+      return;
+    }
+    if (!inWishlist && inCart) {
+      toast.info("This product is already in your cart and can’t be added to your wishlist.");
+      return;
+    }
+    setBusy(true);
+    try {
+      const nextSaved = !inWishlist;
+      await requestAccountCollection("wishlist", nextSaved ? "POST" : "DELETE", { productId });
+      setInWishlist(nextSaved);
+      toast.success(nextSaved ? `${productName} added to your wishlist.` : `${productName} removed from your wishlist.`);
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <button
+      type="button"
+      className={`product-image-wishlist${inWishlist ? " is-added" : ""}`}
+      onClick={toggleWishlist}
+      disabled={busy || isPending}
+      aria-label={inWishlist ? `Remove ${productName} from wishlist` : `Add ${productName} to wishlist`}
+      aria-pressed={inWishlist}
+      title={inWishlist ? "Remove from wishlist" : "Add to wishlist"}
+    >
+      <Heart size={18} aria-hidden="true" fill={inWishlist ? "currentColor" : "none"} />
+    </button>
   );
 }
 
@@ -512,6 +581,7 @@ export function Footer({ categories, products, socialLinks }) {
             <div>
               <Link href="/track-your-orders">Track Your Orders</Link>
               <Link href="/returns-and-exchanges">Return &amp; Exchanges</Link>
+              <Link href="/membership">Membership</Link>
               <Link href="/faq">FAQ</Link>
             </div>
           </div>

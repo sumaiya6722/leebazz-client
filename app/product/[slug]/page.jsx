@@ -104,7 +104,7 @@ async function ProductContent({ params }) {
             fill
             sizes="(max-width: 800px) 100vw, 55vw"
           />
-          <span>LEebazz / {product.id}</span>
+          <span>Leebazz / {product.id}</span>
         </div>
         <section className="detail-info">
           <span className="eyebrow">

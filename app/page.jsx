@@ -87,21 +87,6 @@ export default async function Home() {
                 backgroundImage: poster ? `url(${poster})` : undefined,
               }}
             >
-              <video
-                className="home-category-video"
-                autoPlay
-                muted
-                loop
-                playsInline
-                poster={poster}
-                preload="metadata"
-                aria-hidden="true"
-              >
-                <source
-                  src="https://videos.pexels.com/video-files/4622465/4622465-hd_1920_1080_25fps.mp4"
-                  type="video/mp4"
-                />
-              </video>
               <div className="home-category-shade" />
               <div className="home-category-content">
                 <span className="home-category-kicker">

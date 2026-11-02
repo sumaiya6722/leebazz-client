@@ -1,8 +1,8 @@
-import { AdminPlaceholder } from "@/components/admin-placeholder";
+import { AdminOrdersPage as OrdersDashboard } from "@/components/order-pages";
 
 export const instant = false;
 export const metadata = { title: "Orders | Leebazz Admin" };
 
-export default function AdminOrdersPage() {
-  return <AdminPlaceholder title="Orders" description="Order management will be added after an order data model and checkout flow exist." />;
+export default function AdminOrdersRoute() {
+  return <OrdersDashboard />;
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 import { authClient } from "@/lib/auth-client";
 import { formatPrice, getProductRouteKey, primaryImage } from "@/lib/catalog";
 import { requestAccountCollection } from "@/lib/account-api";
+import { createOrder } from "@/lib/orders-api";
 
 function getCartDetails(item) {
   const attributes = item.attributes ?? {};
@@ -40,18 +41,59 @@ function getCartDetails(item) {
   return details;
 }
 
+function validateCheckoutAddress(address) {
+  const errors = {};
+  const name = address.name.trim();
+  const phone = address.phone.trim().replace(/[\s()-]/g, "");
+  const addressLine = address.addressLine.trim();
+  const city = address.city.trim();
+
+  if (name.length < 2 || name.length > 100) {
+    errors.name = "Enter a name between 2 and 100 characters.";
+  }
+  if (!/^(?:\+?8801[3-9]\d{8}|01[3-9]\d{8})$/.test(phone)) {
+    errors.phone = "Enter a valid Bangladesh mobile number, such as 01XXXXXXXXX or +8801XXXXXXXXX.";
+  }
+  if (addressLine.length < 5 || addressLine.length > 250) {
+    errors.addressLine = "Enter a complete house/road and area.";
+  }
+  if (city.length < 2 || city.length > 100) {
+    errors.city = "Enter a city or area between 2 and 100 characters.";
+  }
+  if (address.postalCode.trim().length > 20) {
+    errors.postalCode = "Postal code must be 20 characters or fewer.";
+  }
+  return errors;
+}
+
 export function AccountCollection({ kind }) {
   const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
   const userId = session?.user?.id;
   const [items, setItems] = useState([]);
   const [cartItems, setCartItems] = useState([]);
+  const [loadedUserId, setLoadedUserId] = useState("");
   const [selectedVariants, setSelectedVariants] = useState({});
   const [loading, setLoading] = useState(true);
+  const [deliveryFee, setDeliveryFee] = useState(0);
   const [busyProduct, setBusyProduct] = useState("");
+  const [placingOrder, setPlacingOrder] = useState(false);
+  const [addressUserId, setAddressUserId] = useState(userId || "");
+  const [address, setAddress] = useState({
+    name: session?.user?.name || "",
+    phone: "",
+    addressLine: "",
+    city: "",
+    postalCode: "",
+  });
+  const [fieldErrors, setFieldErrors] = useState({});
+  const idempotencyKey = useRef("");
   const isCart = kind === "cart";
   const title = isCart ? "Your cart" : "Your wishlist";
   const Icon = isCart ? ShoppingBag : Heart;
+  const checkoutAddress = addressUserId === userId
+    ? address
+    : { name: session?.user?.name || "", phone: "", addressLine: "", city: "", postalCode: "" };
 
   useEffect(() => {
     if (isPending) return;
@@ -63,12 +105,19 @@ export function AccountCollection({ kind }) {
         ? requestAccountCollection("cart", "GET")
         : Promise.resolve({ items: [] }),
     ])
-      .then(([{ items: savedItems }, { items: savedCartItems }]) => {
-        if (active) setItems(savedItems);
-        if (active) setCartItems(savedCartItems);
+      .then(([savedCollection, savedCart]) => {
+        if (active) setItems(savedCollection.items);
+        if (active) setCartItems(savedCart.items);
+        if (active && isCart) setDeliveryFee(savedCollection.deliveryFee || 0);
+        if (active) setLoadedUserId(userId);
       })
       .catch((error) => {
-        if (active) toast.error(error.message);
+        if (active) {
+          setItems([]);
+          setCartItems([]);
+          setLoadedUserId(userId);
+          toast.error(error.message);
+        }
       })
       .finally(() => {
         if (!active) return;
@@ -80,7 +129,7 @@ export function AccountCollection({ kind }) {
     return () => {
       active = false;
     };
-  }, [isPending, userId, kind]);
+  }, [isPending, userId, kind, isCart]);
 
   const total = useMemo(
     () => items.reduce((sum, item) => sum + item.price * (item.quantity || 1), 0),
@@ -160,6 +209,49 @@ export function AccountCollection({ kind }) {
     }
   }
 
+  async function placeOrder(event) {
+    event.preventDefault();
+    if (placingOrder || !items.length) return;
+    if (!session?.user) {
+      toast.info("Please log in to place an order.");
+      router.push("/login");
+      return;
+    }
+
+    const validationErrors = validateCheckoutAddress(checkoutAddress);
+    setFieldErrors(validationErrors);
+    if (Object.keys(validationErrors).length) {
+      toast.error("Check the highlighted delivery details.");
+      return;
+    }
+
+    setPlacingOrder(true);
+    if (!idempotencyKey.current) idempotencyKey.current = window.crypto.randomUUID();
+    try {
+      const { order } = await createOrder({
+        idempotencyKey: idempotencyKey.current,
+        address: checkoutAddress,
+      });
+      router.push(`/orders/${order.id}`);
+    } catch (error) {
+      setFieldErrors(error.fieldErrors || {});
+      toast.error(error.message);
+    } finally {
+      setPlacingOrder(false);
+    }
+  }
+
+  function updateAddress(field, value) {
+    setAddressUserId(userId);
+    setAddress((current) => ({ ...current, [field]: value }));
+    setFieldErrors((current) => {
+      if (!current[field]) return current;
+      const next = { ...current };
+      delete next[field];
+      return next;
+    });
+  }
+
   return (
     <main className="account-collection wrap">
       <div className="account-collection-heading">
@@ -168,7 +260,7 @@ export function AccountCollection({ kind }) {
         <p>{isCart ? "Your selected pieces are gathered here." : "Keep the pieces you love close at hand."}</p>
       </div>
 
-      {isPending || (Boolean(session?.user) && loading) ? (
+      {isPending || (Boolean(session?.user) && (loading || loadedUserId !== userId)) ? (
         <div className="account-collection-skeleton" aria-busy="true" aria-label={`Loading ${title}`}>
           <span className="sr-only" role="status">Loading {title}…</span>
           {Array.from({ length: 3 }, (_, index) => (
@@ -192,7 +284,7 @@ export function AccountCollection({ kind }) {
           <Link className="button button-dark" href="/shop">Explore the collection</Link>
         </div>
       ) : (
-        <div className="account-collection-content">
+        <div className={`account-collection-content${isCart ? " has-checkout" : ""}`}>
           <div className="account-collection-items">
             {items.map((item) => (
               <article className={`account-product-row${isCart ? "" : " wishlist-product-row"}`} key={item.cartItemId || item.id}>
@@ -254,11 +346,46 @@ export function AccountCollection({ kind }) {
             ))}
           </div>
           {isCart && (
-            <aside className="cart-summary">
-              <span>Subtotal</span>
-              <strong>{formatPrice(total)}</strong>
-              <p>Shipping and delivery details are confirmed at checkout.</p>
-            </aside>
+            <form className="cart-summary cart-checkout-panel" noValidate onSubmit={placeOrder}>
+              <h2 className="cart-checkout-heading">Order Summary</h2>
+              <div className="cart-checkout-total"><span>Subtotal</span><strong>{formatPrice(total)}</strong></div>
+              <div className="cart-checkout-total"><span>Delivery fee</span><strong>{formatPrice(deliveryFee)}</strong></div>
+              <div className="cart-checkout-total cart-checkout-grand-total"><span>Estimated total</span><strong>{formatPrice(total + deliveryFee)}</strong></div>
+              {session?.user && (
+                <div className="cart-checkout-fields">
+                  <h2>Delivery Information</h2>
+                  <label>Full name
+                    <input id="checkout-name" required autoComplete="name" maxLength={100} value={checkoutAddress.name} aria-invalid={Boolean(fieldErrors.name)} aria-describedby={fieldErrors.name ? "checkout-name-error" : undefined} onChange={(event) => updateAddress("name", event.target.value)} />
+                    {fieldErrors.name && <span className="checkout-field-error" id="checkout-name-error">{fieldErrors.name}</span>}
+                  </label>
+                  <label>Bangladesh mobile number
+                    <input id="checkout-phone" required type="tel" inputMode="tel" autoComplete="tel" maxLength={30} placeholder="01XXXXXXXXX" value={checkoutAddress.phone} aria-invalid={Boolean(fieldErrors.phone)} aria-describedby={fieldErrors.phone ? "checkout-phone-error" : undefined} onChange={(event) => updateAddress("phone", event.target.value)} />
+                    {fieldErrors.phone && <span className="checkout-field-error" id="checkout-phone-error">{fieldErrors.phone}</span>}
+                  </label>
+                  <label>House/road and area
+                    <input id="checkout-address" required autoComplete="street-address" maxLength={250} placeholder="House, road, neighbourhood" value={checkoutAddress.addressLine} aria-invalid={Boolean(fieldErrors.addressLine)} aria-describedby={fieldErrors.addressLine ? "checkout-address-error" : undefined} onChange={(event) => updateAddress("addressLine", event.target.value)} />
+                    {fieldErrors.addressLine && <span className="checkout-field-error" id="checkout-address-error">{fieldErrors.addressLine}</span>}
+                  </label>
+                  <div className="cart-checkout-address-row">
+                    <label>City / area
+                      <input id="checkout-city" required autoComplete="address-level2" maxLength={100} value={checkoutAddress.city} aria-invalid={Boolean(fieldErrors.city)} aria-describedby={fieldErrors.city ? "checkout-city-error" : undefined} onChange={(event) => updateAddress("city", event.target.value)} />
+                      {fieldErrors.city && <span className="checkout-field-error" id="checkout-city-error">{fieldErrors.city}</span>}
+                    </label>
+                    <label>Postal code (optional)
+                      <input id="checkout-postal-code" autoComplete="postal-code" maxLength={20} value={checkoutAddress.postalCode} aria-invalid={Boolean(fieldErrors.postalCode)} aria-describedby={fieldErrors.postalCode ? "checkout-postal-code-error" : undefined} onChange={(event) => updateAddress("postalCode", event.target.value)} />
+                      {fieldErrors.postalCode && <span className="checkout-field-error" id="checkout-postal-code-error">{fieldErrors.postalCode}</span>}
+                    </label>
+                  </div>
+                </div>
+              )}
+              {session?.user ? (
+                <button className="button button-dark cart-place-order" type="submit" disabled={placingOrder || Boolean(busyProduct)}>
+                  {placingOrder ? "Placing order…" : "Place order"}
+                </button>
+              ) : (
+                <Link className="button button-dark" href="/login">Log in to place your order</Link>
+              )}
+            </form>
           )}
         </div>
       )}

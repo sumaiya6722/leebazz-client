@@ -1,11 +1,13 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowUpRight, Check, CircleUserRound, Mail, PackageCheck, ShoppingBag, Upload, X } from "lucide-react";
 import { toast } from "react-toastify";
 import { authClient } from "@/lib/auth-client";
+import { formatPrice } from "@/lib/catalog";
+import { getMyOrders } from "@/lib/orders-api";
 
 export function ProfilePage() {
   const { data: session, isPending } = authClient.useSession();
@@ -37,6 +39,12 @@ export function ProfilePage() {
 }
 
 function SignedInProfile({ user }) {
+  const [purchaseHistory, setPurchaseHistory] = useState({
+    userId: user.id,
+    orders: [],
+    loading: true,
+    error: "",
+  });
   const [name, setName] = useState(user.name || "");
   const [imageUrl, setImageUrl] = useState(user.image?.startsWith("data:") ? "" : user.image || "");
   const [savedImage, setSavedImage] = useState(user.image || "");
@@ -47,6 +55,35 @@ function SignedInProfile({ user }) {
   const [imageFailed, setImageFailed] = useState(false);
   const [saving, setSaving] = useState(false);
   const imageFileRef = useRef(null);
+
+  useEffect(() => {
+    let active = true;
+    getMyOrders()
+      .then((result) => {
+        if (!Array.isArray(result.orders)) {
+          throw new Error("Purchase history could not be loaded. Please try My Orders.");
+        }
+        if (active) {
+          setPurchaseHistory({
+            userId: user.id,
+            orders: result.orders,
+            loading: false,
+            error: "",
+          });
+        }
+      })
+      .catch((error) => {
+        if (active) {
+          setPurchaseHistory({
+            userId: user.id,
+            orders: [],
+            loading: false,
+            error: error.message || "Could not load your purchase history.",
+          });
+        }
+      });
+    return () => { active = false; };
+  }, [user.id]);
 
   async function chooseImage(event) {
     const file = event.target.files?.[0];
@@ -128,6 +165,10 @@ function SignedInProfile({ user }) {
   const avatar = previewImage && !imageFailed
     ? <Image src={previewImage} alt="" width={58} height={58} unoptimized onError={() => setImageFailed(true)} />
     : initials;
+  const currentPurchaseHistory = purchaseHistory.userId === user.id ? purchaseHistory : null;
+  const ordersLoading = !currentPurchaseHistory || currentPurchaseHistory.loading;
+  const ordersError = currentPurchaseHistory?.error || "";
+  const orders = currentPurchaseHistory?.orders || [];
 
   return (
     <main className="profile-page wrap">
@@ -145,7 +186,7 @@ function SignedInProfile({ user }) {
           <p>{user.email}</p>
           <nav className={"profile-nav"} aria-label="Profile sections">
             <a href="#account-details"><CircleUserRound size={17} />Account details</a>
-            <a href="#purchase-history"><PackageCheck size={17} />Purchase history</a>
+            <Link href="/profile/orders"><PackageCheck size={17} />My orders</Link>
           </nav>
         </aside>
 
@@ -195,12 +236,42 @@ function SignedInProfile({ user }) {
               <div><span className="eyebrow">YOUR ORDERS</span><h2>Purchase history</h2></div>
               <PackageCheck size={22} strokeWidth={1.4} aria-hidden="true" />
             </div>
-            <div className={"profile-orders-empty"}>
-              <span className={"profile-orders-icon"}><ShoppingBag size={23} strokeWidth={1.4} /></span>
-              <h3>No purchases yet</h3>
-              <p>Orders you place will appear here. Checkout and order tracking aren’t available on the store yet.</p>
-              <Link href="/shop" className={"profile-shop-link"}>Explore the collection <ArrowUpRight size={15} /></Link>
-            </div>
+            {ordersLoading ? (
+              <p className="profile-orders-state" role="status">Loading your purchase history…</p>
+            ) : ordersError ? (
+              <div className="profile-orders-state profile-orders-error" role="alert">
+                <p>{ordersError}</p>
+                <Link href="/profile/orders" className="profile-shop-link">Open My Orders <ArrowUpRight size={15} /></Link>
+              </div>
+            ) : orders.length ? (
+              <div className="profile-order-list">
+                {orders.slice(0, 3).map((order) => (
+                  <article className="profile-order-card" key={order.id}>
+                    <div className="profile-order-main">
+                      <Link href={`/orders/${order.id}`} className="profile-order-number">{order.orderNumber}</Link>
+                      <span className="profile-order-date">
+                        {new Intl.DateTimeFormat("en-BD", { dateStyle: "medium", timeZone: "Asia/Dhaka" }).format(new Date(order.createdAt))}
+                      </span>
+                      <span className="profile-order-products">
+                        {order.items.map((item) => `${item.productName} × ${item.quantity}`).join(", ")}
+                      </span>
+                    </div>
+                    <div className="profile-order-side">
+                      <strong>{formatPrice(order.total)}</strong>
+                      <span className="profile-order-status">{(order.status || "pending_confirmation").replaceAll("_", " ")}</span>
+                    </div>
+                  </article>
+                ))}
+                <Link href="/profile/orders" className="profile-shop-link">View all orders <ArrowUpRight size={15} /></Link>
+              </div>
+            ) : (
+              <div className="profile-orders-empty">
+                <span className="profile-orders-icon"><ShoppingBag size={23} strokeWidth={1.4} /></span>
+                <h3>No purchases yet</h3>
+                <p>Your order history, payment information, and fulfilment updates will appear here after your first order.</p>
+                <Link href="/shop" className="profile-shop-link">Explore the collection <ArrowUpRight size={15} /></Link>
+              </div>
+            )}
           </section>
         </div>
       </div>

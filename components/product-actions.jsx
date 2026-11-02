@@ -30,7 +30,9 @@ export function ProductActions({ productId, variants = [] }) {
         setInCart(cart.items.some((item) => item.id === productId && (!selectedSku || item.selectedVariant?.sku === selectedSku)));
         setInWishlist(wishlist.items.some((item) => item.id === productId));
       })
-      .catch(() => {});
+      .catch((error) => {
+        if (active) toast.error(error.message);
+      });
     return () => {
       active = false;
     };

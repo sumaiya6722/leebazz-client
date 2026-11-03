@@ -1,6 +1,8 @@
 import { getCatalog, getProducts } from "@/lib/catalog";
 import { ProductGrid } from "@/components/storefront";
 
+export const instant = false;
+
 export default async function ShopPage() {
   const [catalog, products] = await Promise.all([getCatalog(), getProducts()]);
   const filterKeys = [

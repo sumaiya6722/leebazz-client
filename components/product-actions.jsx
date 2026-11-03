@@ -14,9 +14,13 @@ export function ProductActions({ productId, variants = [] }) {
   const [inCart, setInCart] = useState(false);
   const [inWishlist, setInWishlist] = useState(false);
   const [busy, setBusy] = useState("");
-  const [selectedSku, setSelectedSku] = useState(variants.length === 1 ? variants[0].sku : "");
+  const [selectedSku, setSelectedSku] = useState(
+    variants.find((variant) => variant.stock > 0)?.sku ?? variants[0]?.sku ?? "",
+  );
   const selectedVariant = variants.find((variant) => variant.sku === selectedSku);
   const needsChoice = variants.length > 1;
+  const isOutOfStock = !variants.some((variant) => variant.stock > 0);
+  const selectedVariantOutOfStock = !selectedVariant || selectedVariant.stock < 1;
 
   useEffect(() => {
     if (isPending || !userId) return;
@@ -63,6 +67,10 @@ export function ProductActions({ productId, variants = [] }) {
 
   async function addToCart() {
     if (isPending || busy) return;
+    if (isOutOfStock || selectedVariantOutOfStock) {
+      toast.info("This product is currently out of stock.");
+      return;
+    }
     if (needsChoice && !selectedVariant) {
       toast.info("Choose a size before adding this product to your cart.");
       return;
@@ -93,22 +101,23 @@ export function ProductActions({ productId, variants = [] }) {
         <legend className="detail-label">Choose a size</legend>
         <div className="variant-list">
           {variants.map((variant) => (
-            <label className={selectedSku === variant.sku ? "selected" : ""} key={variant.sku}>
-              <input type="radio" name={`size-${productId}`} value={variant.sku} checked={selectedSku === variant.sku} onChange={() => setSelectedSku(variant.sku)} />
-              <span>{variant.label}</span>
+            <label className={`${selectedSku === variant.sku ? "selected" : ""}${variant.stock < 1 ? " is-unavailable" : ""}`} key={variant.sku}>
+              <input type="radio" name={`size-${productId}`} value={variant.sku} checked={selectedSku === variant.sku} disabled={variant.stock < 1} onChange={() => setSelectedSku(variant.sku)} />
+              <span>{variant.label}{variant.stock < 1 ? " · Unavailable" : ""}</span>
             </label>
           ))}
         </div>
       </fieldset>}
+    {isOutOfStock && <p className="product-availability is-unavailable" role="status">Currently unavailable</p>}
     <div className="product-actions" aria-label="Save or add this product">
       <button
         type="button"
         className={`product-action-button product-action-cart${inCart ? " is-added" : ""}`}
         onClick={addToCart}
-        disabled={Boolean(busy) || isPending}
+        disabled={Boolean(busy) || isPending || isOutOfStock || selectedVariantOutOfStock}
       >
         <ShoppingBag size={17} aria-hidden="true" />
-        {busy === "cart" ? "Adding…" : inCart ? "View cart" : "Add to cart"}
+        {isOutOfStock || selectedVariantOutOfStock ? "Out of stock" : busy === "cart" ? "Adding…" : inCart ? "View cart" : "Add to cart"}
       </button>
       <button
         type="button"

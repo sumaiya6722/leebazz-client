@@ -4,6 +4,8 @@ import { getCatalog, getProducts } from "@/lib/catalog";
 import { BrandLogo, ProductCard } from "@/components/storefront";
 import { HomeBanner } from "@/components/home-banner";
 
+export const instant = false;
+
 export default async function Home() {
   const [catalog, products] = await Promise.all([getCatalog(), getProducts()]);
   const featured = catalog.homepage.featuredProductIds

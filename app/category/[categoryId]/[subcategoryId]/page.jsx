@@ -5,15 +5,7 @@ import { getCatalog, getProducts } from "@/lib/catalog";
 import { ProductGrid } from "@/components/storefront";
 import { CatalogLoading } from "@/components/catalog-loading";
 
-export async function generateStaticParams() {
-  const catalog = await getCatalog();
-  return catalog.categories.flatMap((category) =>
-    category.subcategories.map((subcategory) => ({
-      categoryId: category.id,
-      subcategoryId: subcategory.id,
-    })),
-  );
-}
+export const instant = false;
 
 export async function generateMetadata({ params }) {
   const { categoryId, subcategoryId } = await params;

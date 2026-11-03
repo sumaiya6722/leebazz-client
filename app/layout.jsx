@@ -10,6 +10,8 @@ export const metadata = {
     "Explore clothing, jewellery, home accents and everyday care at Leebazz.",
 };
 
+export const instant = false;
+
 export default async function RootLayout({ children }) {
   const [catalog, products] = await Promise.all([getCatalog(), getProducts()]);
   return (

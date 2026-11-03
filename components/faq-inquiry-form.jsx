@@ -3,8 +3,7 @@
 import { useState } from "react";
 import { ArrowUpRight } from "lucide-react";
 import { toast } from "react-toastify";
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+import { requestFaqApi } from "@/lib/faq-api";
 
 export function FaqInquiryForm() {
   const [status, setStatus] = useState({ type: "", message: "" });
@@ -26,14 +25,11 @@ export function FaqInquiryForm() {
     };
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/faq-queries`, {
+      await requestFaqApi("/api/faq-queries", {
         method: "POST",
-        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-      const result = await response.json().catch(() => ({}));
-      if (!response.ok) throw new Error(result.error || "We could not send your question. Please try again.");
       form.reset();
       setStatus({ type: "", message: "" });
       toast.success("Your question has been sent successfully.");

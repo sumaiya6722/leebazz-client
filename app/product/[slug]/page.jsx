@@ -14,11 +14,7 @@ import {
 import { ProductCard } from "@/components/storefront";
 import { ProductActions } from "@/components/product-actions";
 
-export async function generateStaticParams() {
-  return (await getProducts()).map((product) => ({
-    slug: getProductRouteKey(product),
-  }));
-}
+export const instant = false;
 
 function ProductLoading() {
   return (
@@ -116,6 +112,10 @@ async function ProductContent({ params }) {
             }
           </span>
           <h1>{product.name}</h1>
+          <div className="detail-product-status">
+            {product.isNewArrival && <span className="product-arrival-badge">New arrival</span>}
+            {product.totalStock < 1 && <span className="product-stock-badge">Out of stock</span>}
+          </div>
           <div className="detail-price">
             {formatPrice(product.price, product.currency)}
           </div>

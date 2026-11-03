@@ -3,6 +3,8 @@ import { getCatalog, getProducts } from "@/lib/catalog";
 import { ProductGrid } from "@/components/storefront";
 import { CatalogLoading } from "@/components/catalog-loading";
 
+export const instant = false;
+
 async function SearchResults({ searchParams }) {
   const { q = "" } = await searchParams;
   const query = Array.isArray(q) ? q[0] : q;

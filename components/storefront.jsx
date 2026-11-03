@@ -14,6 +14,7 @@ import {
   UserRound,
   Heart,
   Mail,
+  Bell,
   ShoppingCart,
   PackageCheck,
   LogOut,
@@ -21,6 +22,7 @@ import {
 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { requestAccountCollection } from "@/lib/account-api";
+import { getFaqReplyUnreadCount } from "@/lib/faq-replies-api";
 import { toast } from "react-toastify";
 import {
   formatPrice,
@@ -65,6 +67,36 @@ export function Header({ categories }) {
   }, [isPending, user?.id]);
 
   useEffect(() => {
+    if (isPending || !user?.id || isAdmin) return;
+    let active = true;
+    const refreshUnreadReplies = () => {
+      getFaqReplyUnreadCount()
+        .then((result) => {
+          if (active) setNewItemBadges((current) => ({
+            ...current,
+            [`${user.id}:faq-replies`]: result.count,
+          }));
+        })
+        .catch((error) => {
+          if (active) console.error("Could not check for FAQ replies:", error);
+        });
+    };
+    const clearUnreadReplies = () => {
+      setNewItemBadges((current) => ({ ...current, [`${user.id}:faq-replies`]: 0 }));
+    };
+    refreshUnreadReplies();
+    const intervalId = window.setInterval(refreshUnreadReplies, 60000);
+    window.addEventListener("focus", refreshUnreadReplies);
+    window.addEventListener("leebazz:faq-replies-viewed", clearUnreadReplies);
+    return () => {
+      active = false;
+      window.clearInterval(intervalId);
+      window.removeEventListener("focus", refreshUnreadReplies);
+      window.removeEventListener("leebazz:faq-replies-viewed", clearUnreadReplies);
+    };
+  }, [isPending, user?.id, isAdmin]);
+
+  useEffect(() => {
     if (!accountOpen) return;
     const closeOnOutsideClick = (event) => {
       if (!accountRef.current?.contains(event.target)) setAccountOpen(false);
@@ -98,8 +130,10 @@ export function Header({ categories }) {
   const initials = displayName.slice(0, 1).toUpperCase();
   const cartBadgeKey = user ? `${user.id}:cart` : "";
   const wishlistBadgeKey = user ? `${user.id}:wishlist` : "";
+  const faqRepliesBadgeKey = user ? `${user.id}:faq-replies` : "";
   const newCartItems = newItemBadges[cartBadgeKey] ?? 0;
   const newWishlistItems = newItemBadges[wishlistBadgeKey] ?? 0;
+  const unreadFaqReplies = newItemBadges[faqRepliesBadgeKey] ?? 0;
 
   if (pathname?.startsWith("/admin")) return null;
 
@@ -210,6 +244,16 @@ export function Header({ categories }) {
                     <Link href="/profile" role="menuitem" onClick={() => setAccountOpen(false)}><UserRound size={16} />My profile</Link>
                     <Link href="/cart" role="menuitem" onClick={() => setAccountOpen(false)}><ShoppingCart size={16} />My cart</Link>
                     <Link href="/wishlist" role="menuitem" onClick={() => setAccountOpen(false)}><Heart size={16} />My wishlist</Link>
+                    {!isAdmin && (
+                      <Link href="/profile/faq-replies" role="menuitem" onClick={() => setAccountOpen(false)}>
+                        <span className="account-faq-replies-icon">
+                          <Bell size={16} />
+                          {unreadFaqReplies > 0 && <span className="account-faq-replies-badge" aria-label={`${unreadFaqReplies} unread FAQ ${unreadFaqReplies === 1 ? "reply" : "replies"}`} />}
+                        </span>
+                        FAQ replies
+                        {unreadFaqReplies > 0 && <span className="account-faq-replies-count">{unreadFaqReplies > 99 ? "99+" : unreadFaqReplies}</span>}
+                      </Link>
+                    )}
                     {isAdmin && <Link href="/admin" role="menuitem" onClick={() => setAccountOpen(false)}><LayoutDashboard size={16} />Admin dashboard</Link>}
                     {isAdmin && <Link href="/admin/faq-queries" role="menuitem" onClick={() => setAccountOpen(false)}><Mail size={16} />Customer questions</Link>}
                     <Link href="/profile#purchase-history" role="menuitem" onClick={() => setAccountOpen(false)}><PackageCheck size={16} />My order</Link>
@@ -234,6 +278,7 @@ export function Header({ categories }) {
 
 export function ProductCard({ product, categoryName }) {
   const productId = product.id ?? product._id;
+  const outOfStock = !product.variants.some((variant) => variant.stock > 0);
   return (
     <article className="product-card">
       <div className="product-image-wrap">
@@ -246,6 +291,10 @@ export function ProductCard({ product, categoryName }) {
             loading="lazy"
           />
           <span className="image-arrow"><ArrowUpRight size={17} /></span>
+          <span className="product-image-badges">
+            {product.isNewArrival && <span className="product-arrival-badge">New arrival</span>}
+            {outOfStock && <span className="product-stock-badge">Out of stock</span>}
+          </span>
         </Link>
         <ProductImageWishlist productId={productId} productName={product.name} />
       </div>
@@ -575,11 +624,9 @@ export function Footer({ categories, products, socialLinks }) {
             <div>
               <Link href="/contact">Contact Us</Link>
               <Link href="/how-to-order">How To Order</Link>
-              <Link href="/billing-and-payments">Billing &amp; Payments</Link>
-              <Link href="/shipping-and-delivery">Shipping &amp; Delivery</Link>
+              <Link href="/track-your-orders">Track Your Orders</Link>
             </div>
             <div>
-              <Link href="/track-your-orders">Track Your Orders</Link>
               <Link href="/returns-and-exchanges">Return &amp; Exchanges</Link>
               <Link href="/membership">Membership</Link>
               <Link href="/faq">FAQ</Link>

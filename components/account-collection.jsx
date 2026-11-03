@@ -148,6 +148,22 @@ export function AccountCollection({ kind }) {
     );
   }
 
+  function isUnavailable(item) {
+    return (item.variants ?? []).every((variant) => variant.stock < 1)
+      || (item.selectedVariant?.stock ?? 1) < 1;
+  }
+
+  function wishlistActionLabel(item) {
+    const variants = item.variants ?? [];
+    const selectedSku = getSelectedSku(item);
+    if (isUnavailable(item)) return "Out of stock";
+    if (variants.find((variant) => variant.sku === selectedSku)?.stock < 1) return "Unavailable";
+    if (busyProduct.startsWith(`${item.id}:`)) return "Adding…";
+    if (isItemInCart(item)) return "View in cart";
+    if (variants.length > 1 && !selectedSku) return "Choose a size";
+    return "Add to cart";
+  }
+
   async function removeItem(item) {
     const itemKey = item.cartItemId || item.id;
     setBusyProduct(itemKey);
@@ -295,6 +311,10 @@ export function AccountCollection({ kind }) {
                   <span className="eyebrow">{item.categoryId}</span>
                   <Link className="account-product-name" href={`/product/${getProductRouteKey(item)}`}>{item.name}</Link>
                   <span className="account-product-price">{formatPrice(item.price, item.currency)}</span>
+                  <div className="detail-product-status">
+                    {item.isNewArrival && <span className="product-arrival-badge">New arrival</span>}
+                    {(item.selectedVariant?.stock < 1 || item.variants?.every((variant) => variant.stock < 1)) && <span className="product-stock-badge">Out of stock</span>}
+                  </div>
                   {getCartDetails(item).length > 0 && <ul className={`cart-specs cart-specs-${item.categoryId}`} aria-label="Product details">
                     {getCartDetails(item).map(([label, value]) => <li key={label}><span className="cart-spec-label">{label}</span><strong className="cart-spec-value">{value}</strong></li>)}
                   </ul>}
@@ -307,7 +327,7 @@ export function AccountCollection({ kind }) {
                         onChange={(event) => setSelectedVariants((current) => ({ ...current, [item.id]: event.target.value }))}
                       >
                         <option value="">Select size</option>
-                        {item.variants.map((variant) => <option key={variant.sku} value={variant.sku}>{variant.label}</option>)}
+                        {item.variants.map((variant) => <option key={variant.sku} value={variant.sku} disabled={variant.stock < 1}>{variant.label}{variant.stock < 1 ? " · Unavailable" : ""}</option>)}
                       </select>
                     </label>
                   )}
@@ -325,17 +345,11 @@ export function AccountCollection({ kind }) {
                     <button
                       className="wishlist-add-to-cart"
                       type="button"
-                      disabled={Boolean(busyProduct) || ((item.variants?.length ?? 0) > 1 && !selectedVariants[item.id])}
+                      disabled={Boolean(busyProduct) || isUnavailable(item) || item.variants?.find((variant) => variant.sku === getSelectedSku(item))?.stock < 1 || ((item.variants?.length ?? 0) > 1 && !selectedVariants[item.id])}
                       onClick={() => addToCart(item)}
                     >
                       <ShoppingBag size={14} aria-hidden="true" />
-                      {busyProduct.startsWith(`${item.id}:`)
-                        ? "Adding…"
-                        : isItemInCart(item)
-                          ? "View in cart"
-                          : (item.variants?.length ?? 0) > 1 && !getSelectedSku(item)
-                            ? "Choose a size"
-                            : "Add to cart"}
+                      {wishlistActionLabel(item)}
                     </button>
                   )}
                   <button className="account-remove" type="button" disabled={busyProduct === (item.cartItemId || item.id)} onClick={() => removeItem(item)}>

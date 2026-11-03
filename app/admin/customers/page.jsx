@@ -1,8 +1,8 @@
-import { AdminPlaceholder } from "@/components/admin-placeholder";
+import { AdminCustomers } from "@/components/admin-customers";
 
 export const instant = false;
 export const metadata = { title: "Customers | Leebazz Admin" };
 
 export default function AdminCustomersPage() {
-  return <AdminPlaceholder title="Customers" description="Customer account reporting will be connected to Better Auth data in a later step." />;
+  return <AdminCustomers />;
 }

@@ -11,14 +11,14 @@ export default function FaqPage() {
       <div className="page-intro">
         <span className="eyebrow">CUSTOMER CARE</span>
         <h1>How can we <em>help?</em></h1>
-        <p>Send us your question and our team will get back to you by email.</p>
+        <p>Send us your question and check your account for the response from our team.</p>
       </div>
       <div className="faq-page-layout">
         <section className="faq-page-copy">
           <span className="detail-label">Ask Leebazz</span>
           <h2>We’re here to help.</h2>
-          <p>Enter your name and email for replies, then write your question. Your message will be saved for our team.</p>
-          <p className="faq-privacy-note">We’ll store the details you provide so our team can review your question and follow up.</p>
+          <p>Enter your name and email, then write your question. If you’re signed in with the same email, your question and reply will also appear in your account.</p>
+          <p className="faq-privacy-note">We’ll store the details you provide so our team can review your question and respond.</p>
         </section>
         <FaqInquiryForm />
       </div>

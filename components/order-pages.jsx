@@ -76,36 +76,56 @@ function OrderCard({ order, admin = false }) {
   );
 }
 
-export function CustomerOrdersPage() {
+export function CustomerOrdersPage({ tracking = false }) {
   const { data: session, isPending } = authClient.useSession();
   const userId = session?.user?.id;
   const [orders, setOrders] = useState([]);
   const [loadedUserId, setLoadedUserId] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [refreshError, setRefreshError] = useState("");
 
   useEffect(() => {
     if (isPending || !userId) return;
     let active = true;
-    getMyOrders()
-      .then((result) => {
-        if (active) {
-          setOrders(result.orders);
-          setLoadedUserId(userId);
-          setError("");
-        }
-      })
-      .catch((requestError) => {
-        if (active) {
+    let firstRequest = true;
+    let requestPending = false;
+    async function refreshOrders() {
+      if (requestPending) return;
+      requestPending = true;
+      try {
+        const result = await getMyOrders();
+        if (!active) return;
+        setOrders(result.orders);
+        setLoadedUserId(userId);
+        setError("");
+        setRefreshError("");
+      } catch (requestError) {
+        if (!active) return;
+        if (firstRequest) {
           setOrders([]);
           setLoadedUserId(userId);
           setError(requestError.message);
+        } else {
+          setRefreshError(requestError.message);
         }
-      })
-      .finally(() => {
-        if (active) setLoading(false);
-      });
-    return () => { active = false; };
+      } finally {
+        requestPending = false;
+        if (firstRequest) {
+          firstRequest = false;
+          if (active) setLoading(false);
+        }
+      }
+    }
+
+    refreshOrders();
+    const intervalId = window.setInterval(refreshOrders, 30000);
+    window.addEventListener("focus", refreshOrders);
+    return () => {
+      active = false;
+      window.clearInterval(intervalId);
+      window.removeEventListener("focus", refreshOrders);
+    };
   }, [isPending, userId]);
 
   return (
@@ -113,15 +133,18 @@ export function CustomerOrdersPage() {
       <header className="order-page-heading">
         <div>
           <span className="eyebrow">YOUR LEEBAZZ ACCOUNT</span>
-          <h1>My orders</h1>
-          <p>Review your purchases and the latest fulfilment status.</p>
+          <h1>{tracking ? "Track your orders" : "My orders"}</h1>
+          <p>Review your purchases and the latest payment and delivery status. Updates refresh automatically.</p>
         </div>
         <Link className="button button-dark" href="/shop">Continue shopping</Link>
       </header>
       {!session?.user && !isPending ? <div className="order-message">Please <Link className="order-detail-link" href="/login">log in</Link> to view your orders.</div>
         : isPending || loading || loadedUserId !== userId ? <p className="order-message" role="status">Loading your orders…</p>
           : error ? <p className="order-message order-error" role="alert">{error}</p>
-            : orders.length ? <div className="order-list">{orders.map((order) => <OrderCard key={order.id} order={order} />)}</div>
+            : orders.length ? <>
+              {refreshError && <p className="order-message order-error" role="status">Could not refresh order updates: {refreshError}. We’ll try again shortly.</p>}
+              <div className="order-list">{orders.map((order) => <OrderCard key={order.id} order={order} />)}</div>
+            </>
               : <div className="order-message">You haven’t placed an order yet. <Link className="order-detail-link" href="/shop">Explore the collection</Link></div>}
     </main>
   );
@@ -136,28 +159,49 @@ export function OrderDetailPage({ id, admin = false }) {
   const [error, setError] = useState("");
   const [savingStatus, setSavingStatus] = useState(false);
   const [savingPayment, setSavingPayment] = useState(false);
+  const [refreshError, setRefreshError] = useState("");
 
   useEffect(() => {
     if (isPending || !userId) return;
     let active = true;
-    getOrder(id)
-      .then((result) => {
+    let firstRequest = true;
+    let requestPending = false;
+    async function refreshOrder() {
+      if (requestPending) return;
+      requestPending = true;
+      try {
+        const result = await getOrder(id);
         if (!active) return;
         setOrder(result.order);
         setLoadedOrderId(id);
         setError("");
-      })
-      .catch((requestError) => {
-        if (active) {
+        setRefreshError("");
+      } catch (requestError) {
+        if (!active) return;
+        if (firstRequest) {
           setOrder(null);
           setLoadedOrderId(id);
           setError(requestError.message);
+        } else {
+          setRefreshError(requestError.message);
         }
-      })
-      .finally(() => {
-        if (active) setLoading(false);
-      });
-    return () => { active = false; };
+      } finally {
+        requestPending = false;
+        if (firstRequest) {
+          firstRequest = false;
+          if (active) setLoading(false);
+        }
+      }
+    }
+
+    refreshOrder();
+    const intervalId = window.setInterval(refreshOrder, 30000);
+    window.addEventListener("focus", refreshOrder);
+    return () => {
+      active = false;
+      window.clearInterval(intervalId);
+      window.removeEventListener("focus", refreshOrder);
+    };
   }, [id, isPending, userId]);
 
   async function saveStatus(status, successMessage = "Order status updated.") {
@@ -207,7 +251,7 @@ export function OrderDetailPage({ id, admin = false }) {
         <div>
           <span className="eyebrow">{admin ? "ORDER MANAGEMENT" : "ORDER CONFIRMATION"}</span>
           <h1>{order ? (admin ? order.orderNumber : "Thank you for your order") : "Order details"}</h1>
-          {order && <p>{admin ? `Placed ${formatDate(order.createdAt)}` : `Order ${order.orderNumber} was placed on ${formatDate(order.createdAt)}.`}</p>}
+          {order && <p>{admin ? `Placed ${formatDate(order.createdAt)}` : `Order ${order.orderNumber} was placed on ${formatDate(order.createdAt)}. Status updates refresh automatically.`}</p>}
         </div>
         <div className="order-heading-actions">
           {admin
@@ -219,7 +263,9 @@ export function OrderDetailPage({ id, admin = false }) {
         : isPending || loading || loadedOrderId !== id ? <p className="order-message" role="status">Loading order…</p>
           : error ? <p className="order-message order-error" role="alert">{error}</p>
             : order && (
-              <div className="order-detail">
+              <>
+                {refreshError && <p className="order-message order-error" role="status">Could not refresh order updates: {refreshError}. We’ll try again shortly.</p>}
+                <div className="order-detail">
                 <section className="order-detail-card">
                   <h2>Order summary</h2>
                   <div className="order-detail-items">
@@ -294,7 +340,8 @@ export function OrderDetailPage({ id, admin = false }) {
                     </div>
                   )}
                 </aside>
-              </div>
+                </div>
+              </>
             )}
     </main>
   );

@@ -89,4 +89,9 @@ npm run start
 
 ## Deployment
 
-The app can be deployed to a Next.js-compatible host such as [Vercel](https://vercel.com/). Configure the optional public environment variables in the hosting project settings, then build with `npm run build`.
+The app can be deployed to a Next.js-compatible host such as [Vercel](https://vercel.com/). When the frontend and API are deployed on separate domains, configure these variables:
+
+- Frontend: `NEXT_PUBLIC_API_URL` is the backend API origin (for example, `https://api.example.com`), and `BETTER_AUTH_URL` is the frontend's canonical origin.
+- Backend: `BETTER_AUTH_URL` is the frontend origin used to validate Better Auth sessions, and `CLIENT_URL` is the frontend origin for CORS.
+
+The frontend sends API requests through its same-origin `/api/backend` proxy. The proxy forwards the Better Auth session cookie server-to-server; the backend continues to validate the session and enforce endpoint authorization. No JWT or cross-domain cookie configuration is required.

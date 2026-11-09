@@ -163,7 +163,7 @@ export function AdminProducts() {
                           <p>{product.id} · {formatPrice(product.price, product.currency)}</p>
                         </div>
                       </div>
-                      <div className="admin-product-variants" aria-label={`Stock quantities for ${product.name}`}>
+                      <div className="admin-product-variants" role="group" aria-label={`Stock quantities for ${product.name}`}>
                         {product.variants.map((variant) => (
                           <label className="admin-product-quantity" key={variant.sku}>
                             <span>{variant.label}</span>

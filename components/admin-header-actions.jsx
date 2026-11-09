@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { LogOut, Store } from "lucide-react";
@@ -30,13 +32,13 @@ export function AdminHeaderActions({ displayName, image }) {
 
   return (
     <div className="admin-header-actions">
-      <a href="/" className="admin-header-store-link">
+      <Link href="/" className="admin-header-store-link">
         <Store size={14} aria-hidden="true" />
         <span>View storefront</span>
-      </a>
+      </Link>
       <span
         className="admin-avatar"
-        aria-label={`${displayName}'s profile image`}
+        aria-hidden="true"
         style={{
           position: "relative",
           display: "grid",
@@ -50,9 +52,12 @@ export function AdminHeaderActions({ displayName, image }) {
         }}
       >
         {image && !imageFailed ? (
-          <img
+          <Image
             src={image}
             alt=""
+            width={36}
+            height={36}
+            unoptimized
             onError={() => setImageFailed(true)}
             style={{ position: "absolute", inset: 0, display: "block", width: "100%", height: "100%", objectFit: "cover" }}
           />

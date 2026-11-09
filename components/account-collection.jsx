@@ -66,6 +66,31 @@ function validateCheckoutAddress(address) {
   return errors;
 }
 
+const checkoutFieldIds = {
+  name: "checkout-name",
+  phone: "checkout-phone",
+  addressLine: "checkout-address",
+  city: "checkout-city",
+  postalCode: "checkout-postal-code",
+};
+
+const checkoutFieldLabels = {
+  name: "Full name",
+  phone: "Bangladesh mobile number",
+  addressLine: "House/road and area",
+  city: "City / area",
+  postalCode: "Postal code",
+};
+
+function focusFirstCheckoutError(errors) {
+  const field = Object.keys(checkoutFieldIds).find((key) => errors[key]);
+  if (field) {
+    window.requestAnimationFrame(() => {
+      document.getElementById(checkoutFieldIds[field])?.focus();
+    });
+  }
+}
+
 export function AccountCollection({ kind }) {
   const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
@@ -237,6 +262,7 @@ export function AccountCollection({ kind }) {
     const validationErrors = validateCheckoutAddress(checkoutAddress);
     setFieldErrors(validationErrors);
     if (Object.keys(validationErrors).length) {
+      focusFirstCheckoutError(validationErrors);
       toast.error("Check the highlighted delivery details.");
       return;
     }
@@ -250,7 +276,9 @@ export function AccountCollection({ kind }) {
       });
       router.push(`/orders/${order.id}`);
     } catch (error) {
-      setFieldErrors(error.fieldErrors || {});
+      const errors = error.fieldErrors || {};
+      setFieldErrors(errors);
+      focusFirstCheckoutError(errors);
       toast.error(error.message);
     } finally {
       setPlacingOrder(false);
@@ -332,10 +360,10 @@ export function AccountCollection({ kind }) {
                     </label>
                   )}
                   {isCart && (
-                    <div className="cart-quantity" aria-label={`Quantity for ${item.name}`}>
-                      <button type="button" aria-label="Decrease quantity" disabled={busyProduct === (item.cartItemId || item.id) || item.quantity <= 1} onClick={() => changeQuantity(item, item.quantity - 1)}><Minus size={13} /></button>
-                      <span>{item.quantity}</span>
-                      <button type="button" aria-label="Increase quantity" disabled={busyProduct === (item.cartItemId || item.id) || item.quantity >= 99} onClick={() => changeQuantity(item, item.quantity + 1)}><Plus size={13} /></button>
+                    <div className="cart-quantity" role="group" aria-label={`Quantity for ${item.name}`}>
+                      <button type="button" aria-label={`Decrease quantity of ${item.name}`} disabled={busyProduct === (item.cartItemId || item.id) || item.quantity <= 1} onClick={() => changeQuantity(item, item.quantity - 1)}><Minus size={13} aria-hidden="true" /></button>
+                      <output aria-live="polite" aria-atomic="true">{item.quantity}</output>
+                      <button type="button" aria-label={`Increase quantity of ${item.name}`} disabled={busyProduct === (item.cartItemId || item.id) || item.quantity >= 99} onClick={() => changeQuantity(item, item.quantity + 1)}><Plus size={13} aria-hidden="true" /></button>
                     </div>
                   )}
                 </div>
@@ -345,6 +373,7 @@ export function AccountCollection({ kind }) {
                     <button
                       className="wishlist-add-to-cart"
                       type="button"
+                      aria-label={`${wishlistActionLabel(item)}: ${item.name}`}
                       disabled={Boolean(busyProduct) || isUnavailable(item) || item.variants?.find((variant) => variant.sku === getSelectedSku(item))?.stock < 1 || ((item.variants?.length ?? 0) > 1 && !selectedVariants[item.id])}
                       onClick={() => addToCart(item)}
                     >
@@ -352,8 +381,8 @@ export function AccountCollection({ kind }) {
                       {wishlistActionLabel(item)}
                     </button>
                   )}
-                  <button className="account-remove" type="button" disabled={busyProduct === (item.cartItemId || item.id)} onClick={() => removeItem(item)}>
-                    <Trash2 size={15} />Remove
+                  <button className="account-remove" type="button" aria-label={`Remove ${item.name} from ${isCart ? "cart" : "wishlist"}`} disabled={busyProduct === (item.cartItemId || item.id)} onClick={() => removeItem(item)}>
+                    <Trash2 size={15} aria-hidden="true" />Remove
                   </button>
                 </div>
               </article>
@@ -368,6 +397,16 @@ export function AccountCollection({ kind }) {
               {session?.user && (
                 <div className="cart-checkout-fields">
                   <h2>Delivery Information</h2>
+                  {Object.keys(fieldErrors).some((field) => checkoutFieldIds[field]) && (
+                    <div className="checkout-error-summary" role="alert" aria-labelledby="checkout-error-heading">
+                      <h3 id="checkout-error-heading">Check your delivery information</h3>
+                      <ul>
+                        {Object.entries(fieldErrors).filter(([field]) => checkoutFieldIds[field]).map(([field, message]) => (
+                          <li key={field}><a href={`#${checkoutFieldIds[field]}`}>{checkoutFieldLabels[field]}: {message}</a></li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                   <label>Full name
                     <input id="checkout-name" required autoComplete="name" maxLength={100} value={checkoutAddress.name} aria-invalid={Boolean(fieldErrors.name)} aria-describedby={fieldErrors.name ? "checkout-name-error" : undefined} onChange={(event) => updateAddress("name", event.target.value)} />
                     {fieldErrors.name && <span className="checkout-field-error" id="checkout-name-error">{fieldErrors.name}</span>}

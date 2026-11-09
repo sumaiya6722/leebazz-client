@@ -3,6 +3,16 @@ import { getCatalog, getProducts } from "@/lib/catalog";
 import { ProductGrid } from "@/components/storefront";
 import { CatalogLoading } from "@/components/catalog-loading";
 
+export async function generateMetadata({ searchParams }) {
+  const { q = "" } = await searchParams;
+  const query = Array.isArray(q) ? q[0] : q;
+  return {
+    title: query
+      ? `Search results for "${String(query).slice(0, 80)}" | Leebazz`
+      : "Search | Leebazz",
+  };
+}
+
 export const instant = false;
 
 async function SearchResults({ searchParams }) {

@@ -1,5 +1,9 @@
 import { OrderDetailPage } from "@/components/order-pages";
 
+export const metadata = {
+  title: "Order details | Leebazz Admin",
+};
+
 export const instant = false;
 
 export default async function AdminOrderPage({ params }) {

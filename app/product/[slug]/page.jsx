@@ -16,6 +16,15 @@ import { ProductActions } from "@/components/product-actions";
 
 export const instant = false;
 
+export async function generateMetadata({ params }) {
+  const { slug } = await params;
+  const product = await getProduct(slug);
+  return {
+    title: product ? `${product.name} | Leebazz` : "Product not found | Leebazz",
+    description: product?.description || "Explore the Leebazz collection.",
+  };
+}
+
 function ProductLoading() {
   return (
     <main className="wrap detail-page product-loading" aria-busy="true" aria-label="Loading product details">

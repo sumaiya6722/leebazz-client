@@ -15,11 +15,14 @@ export const instant = false;
 export default async function RootLayout({ children }) {
   const [catalog, products] = await Promise.all([getCatalog(), getProducts()]);
   return (
-    <html lang="en">
+    <html lang="en" data-scroll-behavior="smooth">
       <body>
+        <a className="skip-link" href="#main-content">Skip to main content</a>
         <Header categories={catalog.categories} />
         <ToastContainer></ToastContainer>
-        {children}
+        <div id="main-content" tabIndex={-1}>
+          {children}
+        </div>
         <Footer
           categories={catalog.categories}
           products={products}

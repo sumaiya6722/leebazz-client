@@ -25,6 +25,7 @@ import { requestAccountCollection } from "@/lib/account-api";
 import { getFaqReplyUnreadCount } from "@/lib/faq-replies-api";
 import { toast } from "react-toastify";
 import {
+  fallbackCategories,
   formatPrice,
   getAttributeValues,
   getProductRouteKey,
@@ -32,11 +33,16 @@ import {
 } from "@/lib/catalog";
 
 export function Header({ categories }) {
+  const navigationCategories = Array.isArray(categories)
+    ? categories
+    : fallbackCategories;
   const [open, setOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
   const [failedAvatarUrl, setFailedAvatarUrl] = useState(null);
   const [newItemBadges, setNewItemBadges] = useState({});
   const accountRef = useRef(null);
+  const accountTriggerRef = useRef(null);
+  const mobileMenuButtonRef = useRef(null);
   const router = useRouter();
   const pathname = usePathname();
   const { data: session, isPending } = authClient.useSession();
@@ -102,15 +108,30 @@ export function Header({ categories }) {
       if (!accountRef.current?.contains(event.target)) setAccountOpen(false);
     };
     const closeOnEscape = (event) => {
-      if (event.key === "Escape") setAccountOpen(false);
+      if (event.key === "Escape") {
+        setAccountOpen(false);
+        accountTriggerRef.current?.focus();
+      }
     };
-    document.addEventListener("mousedown", closeOnOutsideClick);
+    document.addEventListener("pointerdown", closeOnOutsideClick);
     document.addEventListener("keydown", closeOnEscape);
     return () => {
-      document.removeEventListener("mousedown", closeOnOutsideClick);
+      document.removeEventListener("pointerdown", closeOnOutsideClick);
       document.removeEventListener("keydown", closeOnEscape);
     };
   }, [accountOpen]);
+
+  useEffect(() => {
+    if (!open) return;
+    const closeOnEscape = (event) => {
+      if (event.key === "Escape") {
+        setOpen(false);
+        mobileMenuButtonRef.current?.focus();
+      }
+    };
+    document.addEventListener("keydown", closeOnEscape);
+    return () => document.removeEventListener("keydown", closeOnEscape);
+  }, [open]);
 
   const logOut = async () => {
     try {
@@ -139,17 +160,29 @@ export function Header({ categories }) {
 
   return (
     <>
-      <div className="announcement">
-        Thoughtfully chosen for every part of your world <span>✳</span>
-      </div>
-      <header className="site-header">
+      <header
+        className="site-header"
+        onClickCapture={(event) => {
+          if (event.target.closest("a")) {
+            setOpen(false);
+            setAccountOpen(false);
+          }
+        }}
+      >
+        <div className="announcement">
+          Thoughtfully chosen for every part of your world <span aria-hidden="true">✳</span>
+        </div>
         <div className="header-top wrap">
           <button
+            ref={mobileMenuButtonRef}
+            type="button"
             className="icon-button mobile-menu"
-            aria-label="Toggle navigation"
+            aria-label={open ? "Close navigation" : "Open navigation"}
+            aria-expanded={open}
+            aria-controls="main-navigation"
             onClick={() => setOpen(!open)}
           >
-            {open ? <X /> : <Menu />}
+            {open ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
           </button>
           <Link
             href="/"
@@ -159,6 +192,7 @@ export function Header({ categories }) {
             leebazz<span>.</span>
           </Link>
           <nav
+            id="main-navigation"
             className={`main-nav ${open ? "is-open" : ""}`}
             aria-label="Main navigation"
           >
@@ -169,7 +203,7 @@ export function Header({ categories }) {
             >
               Shop all
             </Link>
-            {categories.map((category) => (
+            {navigationCategories.map((category) => (
               <Link
                 key={category.id}
                 href={`/category/${category.id}`}
@@ -184,15 +218,17 @@ export function Header({ categories }) {
               action="/search"
               className="search-box"
               style={{ width: "clamp(110px, 8vw, 140px)" }}
+              onSubmit={() => setOpen(false)}
             >
-              <Search size={17} />
+              <Search size={17} aria-hidden="true" />
               <input
                 name="q"
+                type="search"
                 placeholder="Search"
                 aria-label="Search products"
               />
-              <button aria-label="Submit search">
-                <ArrowUpRight size={16} />
+              <button type="submit" aria-label="Submit search">
+                <ArrowUpRight size={16} aria-hidden="true" />
               </button>
             </form>
             <Link
@@ -215,10 +251,10 @@ export function Header({ categories }) {
               <div className="account-menu" ref={accountRef}>
                 <span className="account-name">Hi, {greetingName}!</span>
                 <button
+                  ref={accountTriggerRef}
                   type="button"
                   className="account-trigger"
                   aria-label={`Account menu for ${displayName}`}
-                  aria-haspopup="menu"
                   aria-expanded={accountOpen}
                   onClick={() => setAccountOpen((value) => !value)}
                 >
@@ -236,28 +272,28 @@ export function Header({ categories }) {
                   </span>
                 </button>
                 {accountOpen && (
-                  <nav className="account-dropdown" aria-label="Account menu" role="menu">
+                  <nav id="account-dropdown" className="account-dropdown" aria-label="Account menu">
                     <div className="account-dropdown-heading">
                       <span>Signed in as</span>
                       <strong>{displayName}</strong>
                     </div>
-                    <Link href="/profile" role="menuitem" onClick={() => setAccountOpen(false)}><UserRound size={16} />My profile</Link>
-                    <Link href="/cart" role="menuitem" onClick={() => setAccountOpen(false)}><ShoppingCart size={16} />My cart</Link>
-                    <Link href="/wishlist" role="menuitem" onClick={() => setAccountOpen(false)}><Heart size={16} />My wishlist</Link>
+                    <Link href="/profile" onClick={() => setAccountOpen(false)}><UserRound size={16} aria-hidden="true" />My profile</Link>
+                    <Link href="/cart" onClick={() => setAccountOpen(false)}><ShoppingCart size={16} aria-hidden="true" />My cart</Link>
+                    <Link href="/wishlist" onClick={() => setAccountOpen(false)}><Heart size={16} aria-hidden="true" />My wishlist</Link>
                     {!isAdmin && (
-                      <Link href="/profile/faq-replies" role="menuitem" onClick={() => setAccountOpen(false)}>
+                      <Link href="/profile/faq-replies" onClick={() => setAccountOpen(false)}>
                         <span className="account-faq-replies-icon">
-                          <Bell size={16} />
-                          {unreadFaqReplies > 0 && <span className="account-faq-replies-badge" aria-label={`${unreadFaqReplies} unread FAQ ${unreadFaqReplies === 1 ? "reply" : "replies"}`} />}
+                          <Bell size={16} aria-hidden="true" />
+                          {unreadFaqReplies > 0 && <span className="account-faq-replies-badge" aria-hidden="true" />}
                         </span>
                         FAQ replies
                         {unreadFaqReplies > 0 && <span className="account-faq-replies-count">{unreadFaqReplies > 99 ? "99+" : unreadFaqReplies}</span>}
                       </Link>
                     )}
-                    {isAdmin && <Link href="/admin" role="menuitem" onClick={() => setAccountOpen(false)}><LayoutDashboard size={16} />Admin dashboard</Link>}
-                    {isAdmin && <Link href="/admin/faq-queries" role="menuitem" onClick={() => setAccountOpen(false)}><Mail size={16} />Customer questions</Link>}
-                    <Link href="/profile#purchase-history" role="menuitem" onClick={() => setAccountOpen(false)}><PackageCheck size={16} />My order</Link>
-                    <button type="button" role="menuitem" onClick={logOut}><LogOut size={16} />Log out</button>
+                    {isAdmin && <Link href="/admin" onClick={() => setAccountOpen(false)}><LayoutDashboard size={16} aria-hidden="true" />Admin dashboard</Link>}
+                    {isAdmin && <Link href="/admin/faq-queries" onClick={() => setAccountOpen(false)}><Mail size={16} aria-hidden="true" />Customer questions</Link>}
+                    <Link href="/profile#purchase-history" onClick={() => setAccountOpen(false)}><PackageCheck size={16} aria-hidden="true" />My order</Link>
+                    <button type="button" onClick={logOut}><LogOut size={16} aria-hidden="true" />Log out</button>
                   </nav>
                 )}
               </div>
@@ -267,7 +303,7 @@ export function Header({ categories }) {
                 <Link href="/signUp" className="header-signup">Sign up</Link>
               </>
             ) : (
-              <span className="account-loading" aria-label="Loading account" />
+              <span className="account-loading" role="status">Loading account…</span>
             )}
           </div>
         </div>
@@ -328,7 +364,7 @@ function ProductImageWishlist({ productId, productName }) {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    if (isPending || !session?.user || !productId) return;
+    if (isPending || !session?.user?.id || !productId) return;
     let active = true;
     Promise.all([
       requestAccountCollection("wishlist", "GET"),
@@ -444,7 +480,7 @@ export function ProductGrid({ products, categories, filterKeys, query = "" }) {
     <>
       <div className="catalog-tools">
         <div className="filter-row">
-          <SlidersHorizontal size={15} />
+          <SlidersHorizontal size={15} aria-hidden="true" />
           <span>Filter</span>
           {filterKeys
             .filter((key) => key !== "price")
@@ -483,7 +519,7 @@ export function ProductGrid({ products, categories, filterKeys, query = "" }) {
           )}
         </div>
         <div className="sort-row">
-          <span>{visible.length} pieces</span>
+          <span role="status" aria-live="polite" aria-atomic="true">{visible.length} pieces</span>
           <label>
             Sort{" "}
             <select value={sort} onChange={(e) => setSort(e.target.value)}>

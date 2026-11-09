@@ -79,7 +79,7 @@ export default function NotFound() {
       <div className="flex w-fit max-w-full flex-col items-center gap-3 sm:flex-row">
         <Link
           href="/"
-          className="border border-[#bd492e] bg-[#bd492e] px-5 py-3 font-serif text-sm text-white transition-colors hover:bg-white"
+          className="not-found-primary-action border border-[#bd492e] bg-[#bd492e] px-5 py-3 font-serif text-sm text-white transition-colors hover:bg-white"
         >
           Back to home
         </Link>

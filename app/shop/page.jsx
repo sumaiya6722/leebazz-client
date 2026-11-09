@@ -1,6 +1,11 @@
 import { getCatalog, getProducts } from "@/lib/catalog";
 import { ProductGrid } from "@/components/storefront";
 
+export const metadata = {
+  title: "Shop all | Leebazz",
+  description: "Browse the complete Leebazz collection.",
+};
+
 export const instant = false;
 
 export default async function ShopPage() {
